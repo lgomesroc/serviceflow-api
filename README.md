@@ -135,6 +135,30 @@ Em desenvolvimento.
 
 O projeto está sendo construído de forma incremental, começando pela configuração da aplicação, integração com PostgreSQL e estrutura inicial da API.
 
+## Progresso do desenvolvimento
+
+### Dia 1
+- Configuração inicial do projeto Spring Boot
+- Configuração do Maven Wrapper
+- Configuração do PostgreSQL com Docker
+- Configuração da conexão da aplicação com o banco de dados
+
+### Dia 2
+- Configuração do Spring Data JPA
+- Configuração do Hibernate
+- Validação da conexão com PostgreSQL
+- Estrutura inicial do projeto documentada
+
+### Dia 3
+- Criação da entidade `ServiceRequest`
+- Criação do enum `ServiceRequestStatus`
+- Configuração do mapeamento JPA para a tabela `service_requests`
+- Criação do `ServiceRequestRepository` utilizando Spring Data JPA
+- Configuração automática de `status` e `createdAt` através de `@PrePersist`
+- Criação de teste automatizado para persistência
+- Validação da persistência de uma solicitação no PostgreSQL
+- Testes executados com sucesso: **2 testes, 0 falhas, 0 erros**
+
 ## Autor
 
 Luciano Rocha
