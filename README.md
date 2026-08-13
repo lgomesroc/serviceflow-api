@@ -46,10 +46,26 @@ serviceflow-api/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── com/serviceflow/api/
+│   │   │       ├── controller/
+│   │   │       │   └── ServiceRequestController.java
+│   │   │       ├── entity/
+│   │   │       │   ├── ServiceRequest.java
+│   │   │       │   └── ServiceRequestStatus.java
+│   │   │       ├── repository/
+│   │   │       │   └── ServiceRequestRepository.java
+│   │   │       ├── service/
+│   │   │       │   └── ServiceRequestService.java
+│   │   │       └── ServiceflowApiApplication.java
 │   │   └── resources/
 │   │       └── application.properties
 │   └── test/
 │       └── java/
+│           └── com/serviceflow/api/
+│               ├── repository/
+│               │   └── ServiceRequestRepositoryTest.java
+│               ├── service/
+│               │   └── ServiceRequestServiceTest.java
+│               └── ServiceflowApiApplicationTests.java
 ├── .gitignore
 ├── pom.xml
 ├── mvnw
@@ -92,7 +108,29 @@ git clone https://github.com/lgomesroc/serviceflow-api.git
 cd serviceflow-api
 ```
 
-Inicie o PostgreSQL:
+## PostgreSQL
+
+O projeto utiliza um contêiner PostgreSQL executado através do Docker.
+
+Antes de executar a aplicação, o **Docker deve estar em execução e o contêiner `serviceflow-postgres` também deve estar iniciado.**
+
+Verifique:
+
+```bash
+docker ps
+```
+
+O contêiner deve aparecer com a porta:
+
+`0.0.0.0:5432->5432/tcp`
+
+Caso o contêiner já exista, mas esteja parado:
+
+```bash
+docker start serviceflow-postgres
+```
+
+Caso ainda não exista, crie o contêiner:
 
 ```bash
 docker run --name serviceflow-postgres \
@@ -100,17 +138,23 @@ docker run --name serviceflow-postgres \
   -e POSTGRES_USER=serviceflow \
   -e POSTGRES_PASSWORD=serviceflow_dev \
   -p 5432:5432 \
-  -d postgres
+  -d postgres:17
 ```
 
-Execute os testes:
+A aplicação utiliza:
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/serviceflow
+spring.datasource.username=serviceflow
+spring.datasource.password=serviceflow_dev
+```
+
+Com o PostgreSQL em execução, execute os testes:
 
 ```bash
 ./mvnw test
 ```
 
 Execute o projeto:
-
 ```bash
 ./mvnw spring-boot:run
 ```
@@ -158,6 +202,25 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Criação de teste automatizado para persistência
 - Validação da persistência de uma solicitação no PostgreSQL
 - Testes executados com sucesso: **2 testes, 0 falhas, 0 erros**
+
+### Dia 4
+- Criação da camada de serviço `ServiceRequestService`
+- Criação da camada REST `ServiceRequestController`
+- Implementação do cadastro de solicitações de serviço
+- Implementação da consulta de solicitações de serviço
+- Integração entre Controller, Service e Repository
+- Criação de teste automatizado para a camada de serviço utilizando Mockito
+- Validação da criação de solicitações através da API REST
+- Validação da persistência dos dados no PostgreSQL
+- Validação da consulta de solicitações através da API REST
+- Testes executados com sucesso: **3 testes, 0 falhas, 0 erros**
+
+
+## Resumo
+Dia 1 → Configuração inicial
+Dia 2 → JPA + PostgreSQL
+Dia 3 → Entidade + Repository + persistência
+Dia 4 → Service + Controller + endpoints REST
 
 ## Autor
 
