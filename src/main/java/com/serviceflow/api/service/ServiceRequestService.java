@@ -12,14 +12,33 @@ public class ServiceRequestService {
     private final ServiceRequestRepository repository;
 
     public ServiceRequestService(ServiceRequestRepository repository) {
+
         this.repository = repository;
     }
 
     public ServiceRequest create(ServiceRequest serviceRequest) {
+
         return repository.save(serviceRequest);
     }
 
     public List<ServiceRequest> findAll() {
+
         return repository.findAll();
     }
+
+    public ServiceRequest findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow();
+    }
+
+    public ServiceRequest update(Long id, ServiceRequest serviceRequest) {
+        ServiceRequest existingRequest = repository.findById(id)
+                .orElseThrow();
+
+        existingRequest.setTitle(serviceRequest.getTitle());
+        existingRequest.setDescription(serviceRequest.getDescription());
+
+        return repository.save(existingRequest);
+    }
+
 }

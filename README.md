@@ -215,12 +215,25 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Validação da consulta de solicitações através da API REST
 - Testes executados com sucesso: **3 testes, 0 falhas, 0 erros**
 
+### Dia 5
+- Implementação da consulta de uma solicitação de serviço por ID
+- Implementação da atualização de uma solicitação de serviço por ID
+- Atualização dos campos `title` e `description` de uma solicitação existente
+- Preservação dos campos `id`, `status` e `createdAt` durante a atualização
+- Criação de testes automatizados para atualização de solicitações utilizando Mockito
+- Criação de teste automatizado para atualização de uma solicitação inexistente
+- Validação da consulta por ID através da API REST
+- Validação da atualização através da API REST
+- Validação da atualização de uma solicitação inexistente
+- Execução da suíte completa de testes com sucesso: 5 testes, 0 falhas, 0 erros
+- Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 
 ## Resumo
-Dia 1 → Configuração inicial
-Dia 2 → JPA + PostgreSQL
-Dia 3 → Entidade + Repository + persistência
-Dia 4 → Service + Controller + endpoints REST
+Dia 1 → Configuração inicial<br>
+Dia 2 → JPA + PostgreSQL<br>
+Dia 3 → Entidade + Repository + persistência<br>
+Dia 4 → Service + Controller + endpoints REST<br>
+Dia 5 → Consulta por ID + atualização de solicitações
 
 ## Autor
 

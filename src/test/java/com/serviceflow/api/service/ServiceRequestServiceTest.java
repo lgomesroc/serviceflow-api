@@ -32,6 +32,41 @@ class ServiceRequestServiceTest {
         assertSame(request, result);
         verify(repository).save(request);
     }
+
+    @Test
+    void shouldUpdateServiceRequest() {
+        ServiceRequest existingRequest = new ServiceRequest();
+        existingRequest.setTitle("Notebook não liga");
+        existingRequest.setDescription("Equipamento não apresenta sinais de energia");
+
+        ServiceRequest updatedRequest = new ServiceRequest();
+        updatedRequest.setTitle("Notebook não liga - atualizado");
+        updatedRequest.setDescription("Equipamento continua sem apresentar sinais de energia");
+
+        when(repository.findById(1L)).thenReturn(java.util.Optional.of(existingRequest));
+        when(repository.save(existingRequest)).thenReturn(existingRequest);
+
+        ServiceRequest result = service.update(1L, updatedRequest);
+
+        assertSame(existingRequest, result);
+        verify(repository).findById(1L);
+        verify(repository).save(existingRequest);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingNonExistingServiceRequest() {
+        ServiceRequest request = new ServiceRequest();
+
+        when(repository.findById(999L)).thenReturn(java.util.Optional.empty());
+
+        org.junit.jupiter.api.Assertions.assertThrows(
+                java.util.NoSuchElementException.class,
+                () -> service.update(999L, request)
+        );
+
+        verify(repository).findById(999L);
+    }
+
 }
 
 
