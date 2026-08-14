@@ -228,12 +228,30 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Execução da suíte completa de testes com sucesso: 5 testes, 0 falhas, 0 erros
 - Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 
+## Próxima aula
+
+### Dia 6 — Tratamento de exceções e respostas HTTP
+
+- Criação de exceção específica para solicitação de serviço não encontrada
+- Implementação do tratamento de recursos inexistentes
+- Retorno de `404 Not Found` quando uma solicitação não for encontrada
+- Criação de tratamento global de exceções da API
+- Padronização das respostas de erro
+- Atualização do fluxo de consulta por ID
+- Atualização do fluxo de alteração por ID
+- Criação de testes automatizados para recursos inexistentes
+- Validação do comportamento da API através de requisições HTTP
+- Validação dos endpoints existentes após a implementação do tratamento de exceções
+- Execução da suíte completa de testes
+- Empacotamento da aplicação com `./mvnw clean package`
+
 ## Resumo
 Dia 1 → Configuração inicial<br>
 Dia 2 → JPA + PostgreSQL<br>
 Dia 3 → Entidade + Repository + persistência<br>
 Dia 4 → Service + Controller + endpoints REST<br>
-Dia 5 → Consulta por ID + atualização de solicitações
+Dia 5 → Consulta por ID + atualização de solicitações<br>
+Dia 6 → Tratamento de exceções e respostas HTTP<br>
 
 ## Autor
 
