@@ -1,6 +1,7 @@
 package com.serviceflow.api.service;
 
 import com.serviceflow.api.entity.ServiceRequest;
+import com.serviceflow.api.exception.ServiceRequestNotFoundException;
 import com.serviceflow.api.repository.ServiceRequestRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,14 +61,25 @@ class ServiceRequestServiceTest {
 
         when(repository.findById(999L)).thenReturn(java.util.Optional.empty());
 
-        org.junit.jupiter.api.Assertions.assertThrows(
-                java.util.NoSuchElementException.class,
+        assertThrows(
+                ServiceRequestNotFoundException.class,
                 () -> service.update(999L, request)
         );
 
         verify(repository).findById(999L);
     }
 
+    @Test
+    void shouldThrowExceptionWhenFindingNonExistingServiceRequest() {
+
+        when(repository.findById(999L)).thenReturn(java.util.Optional.empty());
+
+        assertThrows(
+                ServiceRequestNotFoundException.class,
+                () -> service.findById(999L)
+        );
+
+        verify(repository).findById(999L);
+    }
+
 }
-
-

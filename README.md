@@ -51,6 +51,10 @@ serviceflow-api/
 │   │   │       ├── entity/
 │   │   │       │   ├── ServiceRequest.java
 │   │   │       │   └── ServiceRequestStatus.java
+│   │   │       ├── exception/ 
+│   │   │       │ ├── ErrorResponse.java │
+│   │   │       │ ├── GlobalExceptionHandler.java 
+│   │   │       │ └── ServiceRequestNotFoundException.java
 │   │   │       ├── repository/
 │   │   │       │   └── ServiceRequestRepository.java
 │   │   │       ├── service/
@@ -181,19 +185,22 @@ O projeto está sendo construído de forma incremental, começando pela configur
 
 ## Progresso do desenvolvimento
 
-### Dia 1
+### Aula 1 - Configuração inicial e integração com PostgreSQL
+
 - Configuração inicial do projeto Spring Boot
 - Configuração do Maven Wrapper
 - Configuração do PostgreSQL com Docker
 - Configuração da conexão da aplicação com o banco de dados
 
-### Dia 2
+### Aula 2 - JPA, Hibernate e persistência de dados
+
 - Configuração do Spring Data JPA
 - Configuração do Hibernate
 - Validação da conexão com PostgreSQL
 - Estrutura inicial do projeto documentada
 
-### Dia 3
+### Aula 3 - Entidade ServiceRequest e Repository
+
 - Criação da entidade `ServiceRequest`
 - Criação do enum `ServiceRequestStatus`
 - Configuração do mapeamento JPA para a tabela `service_requests`
@@ -203,7 +210,8 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Validação da persistência de uma solicitação no PostgreSQL
 - Testes executados com sucesso: **2 testes, 0 falhas, 0 erros**
 
-### Dia 4
+### Aula 4 - Camadas Service e Controller e primeiros endpoints REST
+
 - Criação da camada de serviço `ServiceRequestService`
 - Criação da camada REST `ServiceRequestController`
 - Implementação do cadastro de solicitações de serviço
@@ -215,7 +223,8 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Validação da consulta de solicitações através da API REST
 - Testes executados com sucesso: **3 testes, 0 falhas, 0 erros**
 
-### Dia 5
+### Aula 5 - Consulta e atualização de solicitações por ID
+
 - Implementação da consulta de uma solicitação de serviço por ID
 - Implementação da atualização de uma solicitação de serviço por ID
 - Atualização dos campos `title` e `description` de uma solicitação existente
@@ -228,30 +237,50 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Execução da suíte completa de testes com sucesso: 5 testes, 0 falhas, 0 erros
 - Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 
+### Aula 6 — Tratamento de exceções e respostas HTTP
+
+- Criação da exceção específica `ServiceRequestNotFoundException`
+- Atualização do fluxo de consulta por ID para tratar solicitações inexistentes
+- Atualização do fluxo de alteração por ID para tratar solicitações inexistentes
+- Criação do `GlobalExceptionHandler` utilizando `@RestControllerAdvice`
+- Implementação do tratamento global de `ServiceRequestNotFoundException`
+- Retorno de `404 Not Found` para solicitações inexistentes
+- Criação da classe `ErrorResponse` para padronização das respostas de erro
+- Retorno de respostas de erro em formato JSON
+- Criação de teste automatizado para consulta de solicitação inexistente
+- Atualização do teste automatizado para alteração de solicitação inexistente
+- Validação do `GET /api/service-requests/{id}` com recurso inexistente através de requisição HTTP
+- Validação do `PUT /api/service-requests/{id}` com recurso inexistente através de requisição HTTP
+- Validação da resposta `404 Not Found` com JSON padronizado
+- Execução da suíte completa de testes com sucesso: **6 testes, 0 falhas, 0 erros**
+- Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
+
 ## Próxima aula
 
-### Dia 6 — Tratamento de exceções e respostas HTTP
+### Aula 7 — Validação de dados da API
 
-- Criação de exceção específica para solicitação de serviço não encontrada
-- Implementação do tratamento de recursos inexistentes
-- Retorno de `404 Not Found` quando uma solicitação não for encontrada
-- Criação de tratamento global de exceções da API
-- Padronização das respostas de erro
-- Atualização do fluxo de consulta por ID
-- Atualização do fluxo de alteração por ID
-- Criação de testes automatizados para recursos inexistentes
-- Validação do comportamento da API através de requisições HTTP
-- Validação dos endpoints existentes após a implementação do tratamento de exceções
-- Execução da suíte completa de testes
-- Empacotamento da aplicação com `./mvnw clean package`
+- Introdução à validação de dados com Bean Validation;
+- Adição das dependências necessárias;
+- Uso de `@NotBlank`;
+- Validação dos campos de `ServiceRequest`;
+- Ativação da validação no Controller com `@Valid`;
+- Tratamento global de erros de validação;
+- Retorno de `400 Bad Request`;
+- Padronização da resposta de erro de validação;
+- Testes automatizados para dados inválidos;
+- Validação dos endpoints através de requisições HTTP;
+- Validação dos endpoints existentes após a implementação;
+- Execução da suíte completa de testes;
+- Empacotamento com `./mvnw clean package`.
 
 ## Resumo
-Dia 1 → Configuração inicial<br>
-Dia 2 → JPA + PostgreSQL<br>
-Dia 3 → Entidade + Repository + persistência<br>
-Dia 4 → Service + Controller + endpoints REST<br>
-Dia 5 → Consulta por ID + atualização de solicitações<br>
-Dia 6 → Tratamento de exceções e respostas HTTP<br>
+Aula 1 → Configuração inicial e integração com PostgreSQL<br>
+Aula 2 → JPA, Hibernate e persistência de dados<br>
+Aula 3 → Entidade ServiceRequest e Repository<br>
+Aula 4 → Camadas Service e Controller e primeiros endpoints REST<br>
+Aula 5 → Consulta e atualização de solicitações por ID<br>
+Aula 6 → Tratamento de exceções e respostas HTTP<br>
+Aula 7 → Validação de dados da API
 
 ## Autor
 
