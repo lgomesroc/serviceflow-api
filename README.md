@@ -4,6 +4,28 @@ API REST para gerenciamento de chamados de suporte técnico.
 
 O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **PostgreSQL** como banco de dados e seguindo uma estrutura voltada para boas práticas de desenvolvimento de APIs REST.
 
+## Índice
+
+- [Tecnologias](#tecnologias)
+- [Objetivo](#objetivo)
+- [Funcionalidades planejadas](#funcionalidades-planejadas)
+- [Estrutura do projeto](#estrutura-do-projeto)
+- [Banco de dados](#banco-de-dados)
+- [Executando o projeto](#executando-o-projeto)
+- [Build](#build)
+- [Status do projeto](#status-do-projeto)
+- [Progresso do desenvolvimento](#progresso-do-desenvolvimento)
+    - [Aula 1 - Configuração inicial e integração com PostgreSQL](#aula-1---configuração-inicial-e-integração-com-postgresql)
+    - [Aula 2 - JPA, Hibernate e persistência de dados](#aula-2---jpa-hibernate-e-persistência-de-dados)
+    - [Aula 3 - Entidade ServiceRequest e Repository](#aula-3---entidade-servicerequest-e-repository)
+    - [Aula 4 - Camadas Service e Controller e primeiros endpoints REST](#aula-4---camadas-service-e-controller-e-primeiros-endpoints-rest)
+    - [Aula 5 - Consulta e atualização de solicitações por ID](#aula-5---consulta-e-atualização-de-solicitações-por-id)
+    - [Aula 6 - Tratamento de exceções e respostas HTTP](#aula-6---tratamento-de-exceções-e-respostas-http)
+    - [Aula 7 - Validação de dados da API](#aula-7---validação-de-dados-da-api)
+- [Próxima aula](#próxima-aula)
+- [Resumo](#resumo)
+- [Autor](#autor)
+
 ## Tecnologias
 
 * Java 21
@@ -52,7 +74,7 @@ serviceflow-api/
 │   │   │       │   ├── ServiceRequest.java
 │   │   │       │   └── ServiceRequestStatus.java
 │   │   │       ├── exception/ 
-│   │   │       │ ├── ErrorResponse.java │
+│   │   │       │ ├── ErrorResponse.java
 │   │   │       │ ├── GlobalExceptionHandler.java 
 │   │   │       │ └── ServiceRequestNotFoundException.java
 │   │   │       ├── repository/
@@ -65,6 +87,8 @@ serviceflow-api/
 │   └── test/
 │       └── java/
 │           └── com/serviceflow/api/
+│               ├── controller/
+│               │   └── ServiceRequestControllerTest.java
 │               ├── repository/
 │               │   └── ServiceRequestRepositoryTest.java
 │               ├── service/
@@ -255,23 +279,48 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Execução da suíte completa de testes com sucesso: **6 testes, 0 falhas, 0 erros**
 - Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 
+### Aula 7 - Validação de dados da API
+- Adição das dependências necessárias para Bean Validation
+- Utilização de `@NotBlank` nos campos obrigatórios de `ServiceRequest`
+- Ativação da validação dos dados recebidos pelo Controller com `@Valid`
+- Implementação do tratamento global de erros de validação
+- Padronização das respostas de erro de validação através de `ErrorResponse`
+- Retorno de `400 Bad Request` para dados inválidos
+- Validação do campo `title`
+- Validação do campo `description`
+- Validação de dados inválidos no `POST /api/service-requests`
+- Validação de dados inválidos no `PUT /api/service-requests/{id}`
+- Validação de campos preenchidos apenas com espaços
+- Criação de testes automatizados para validação de dados inválidos
+- Criação de testes de Controller utilizando `MockMvc`
+- Testes automatizados para `POST` com `title` inválido
+- Testes automatizados para `POST` com `description` inválida
+- Testes automatizados para `PUT` com `title` inválido
+- Testes automatizados para `PUT` com `description` inválida
+- Validação dos endpoints através de requisições HTTP com `curl`
+- Validação de criação de solicitação com retorno `201 Created`
+- Validação de atualização de solicitação com retorno `200 OK`
+- Validação dos endpoints existentes após a implementação
+- Execução da suíte completa de testes com sucesso: **10 testes, 0 falhas, 0 erros**
+- Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
+
 ## Próxima aula
 
-### Aula 7 — Validação de dados da API
+### Aula 8 — Testes dos endpoints e cobertura da API
 
-- Introdução à validação de dados com Bean Validation;
-- Adição das dependências necessárias;
-- Uso de `@NotBlank`;
-- Validação dos campos de `ServiceRequest`;
-- Ativação da validação no Controller com `@Valid`;
-- Tratamento global de erros de validação;
-- Retorno de `400 Bad Request`;
-- Padronização da resposta de erro de validação;
-- Testes automatizados para dados inválidos;
-- Validação dos endpoints através de requisições HTTP;
-- Validação dos endpoints existentes após a implementação;
-- Execução da suíte completa de testes;
-- Empacotamento com `./mvnw clean package`.
+- Criação de testes automatizados para o `GET /api/service-requests`
+- Teste de retorno `200 OK` na consulta da lista
+- Criação de teste automatizado para o `GET /api/service-requests/{id}`
+- Teste de retorno `200 OK` para uma solicitação existente
+- Criação de teste automatizado para o `POST /api/service-requests`
+- Teste de retorno `201 Created` para criação válida
+- Criação de teste automatizado para o `PUT /api/service-requests/{id}`
+- Teste de retorno `200 OK` para atualização válida
+- Revisão dos testes de `400 Bad Request`
+- Revisão dos testes de `404 Not Found`
+- Validação da resposta JSON dos endpoints
+- Execução da suíte completa de testes
+- Empacotamento da aplicação com `./mvnw clean package`
 
 ## Resumo
 Aula 1 → Configuração inicial e integração com PostgreSQL<br>
@@ -280,7 +329,8 @@ Aula 3 → Entidade ServiceRequest e Repository<br>
 Aula 4 → Camadas Service e Controller e primeiros endpoints REST<br>
 Aula 5 → Consulta e atualização de solicitações por ID<br>
 Aula 6 → Tratamento de exceções e respostas HTTP<br>
-Aula 7 → Validação de dados da API
+Aula 7 → Validação de dados da API<br>
+Aula 8 → Testes dos endpoints e cobertura da API
 
 ## Autor
 
