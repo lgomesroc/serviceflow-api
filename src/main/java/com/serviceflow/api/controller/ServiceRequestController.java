@@ -2,6 +2,7 @@ package com.serviceflow.api.controller;
 
 import com.serviceflow.api.entity.ServiceRequest;
 import com.serviceflow.api.service.ServiceRequestService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class ServiceRequestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ServiceRequest create(@RequestBody ServiceRequest serviceRequest) {
+    public ServiceRequest create(@Valid @RequestBody ServiceRequest serviceRequest) {
 
         return service.create(serviceRequest);
     }
@@ -39,10 +40,9 @@ public class ServiceRequestController {
     @PutMapping("/{id}")
     public ServiceRequest update(
             @PathVariable Long id,
-            @RequestBody ServiceRequest serviceRequest) {
+            @Valid @RequestBody ServiceRequest serviceRequest) {
 
         return service.update(id, serviceRequest);
     }
 
 }
-
