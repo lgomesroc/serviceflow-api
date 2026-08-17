@@ -307,29 +307,29 @@ O projeto está sendo construído de forma incremental, começando pela configur
 
 ### Aula 8 - Testes dos endpoints e cobertura da API
 
-- Criação de testes automatizados para o GET /api/service-requests
-- Teste de retorno 200 OK na consulta da lista
+- Criação de testes automatizados para o `GET /api/service-requests`
+- Teste de retorno `200 OK` na consulta da lista
 - Validação da resposta JSON da consulta da lista
-- Criação de teste automatizado para o GET /api/service-requests/{id}
-- Teste de retorno 200 OK para uma solicitação existente
+- Criação de teste automatizado para o `GET /api/service-requests/{id}`
+- Teste de retorno `200 OK` para uma solicitação existente
 - Validação dos campos retornados no JSON da solicitação
-- Criação de teste automatizado para o GET /api/service-requests/{id} com ID inexistente
-- Teste de retorno 404 Not Found para solicitação inexistente
-- Validação do JSON de erro retornado pelo GlobalExceptionHandler
-- Criação de teste automatizado para o POST /api/service-requests
-- Teste de retorno 201 Created para criação válida
+- Criação de teste automatizado para o `GET /api/service-requests/{id}` com ID inexistente
+- Teste de retorno `404 Not Found` para solicitação inexistente
+- Validação do JSON de erro retornado pelo `GlobalExceptionHandler`
+- Criação de teste automatizado para o `POST /api/service-requests`
+- Teste de retorno `201 Created` para criação válida
 - Validação do JSON retornado após a criação
-- Criação de teste automatizado para o PUT /api/service-requests/{id}
-- Teste de retorno 200 OK para atualização válida
+- Criação de teste automatizado para o `PUT /api/service-requests/{id}`
+- Teste de retorno `200 OK` para atualização válida
 - Validação do JSON retornado após a atualização
-- Criação de teste automatizado para o PUT /api/service-requests/{id} com ID inexistente
-- Teste de retorno 404 Not Found para atualização de solicitação inexistente
-- Revisão dos testes de 400 Bad Request
-- Revisão dos testes de 404 Not Found
-- Utilização de MockMvc nos testes dos endpoints
-- Execução da suíte completa de testes com sucesso: 16 testes, 0 falhas, 0 erros
-- Empacotamento da aplicação com ./mvnw clean package executado com sucesso
-- Geração do arquivo JAR serviceflow-api-0.0.1-SNAPSHOT.jar
+- Criação de teste automatizado para o `PUT /api/service-requests/{id}` com ID inexistente
+- Teste de retorno `404 Not Found` para atualização de solicitação inexistente
+- Revisão dos testes de `400 Bad Request`
+- Revisão dos testes de `404 Not Found`
+- Utilização de `MockMvc` nos testes dos endpoints
+- Execução da suíte completa de testes com sucesso: **16 testes, 0 falhas, 0 erros**
+- Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
+- Geração do arquivo JAR `serviceflow-api-0.0.1-SNAPSHOT.jar`
 
 ## Próxima aula
 
