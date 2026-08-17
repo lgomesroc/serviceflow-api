@@ -22,7 +22,8 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 5 - Consulta e atualização de solicitações por ID](#aula-5---consulta-e-atualização-de-solicitações-por-id)
     - [Aula 6 - Tratamento de exceções e respostas HTTP](#aula-6---tratamento-de-exceções-e-respostas-http)
     - [Aula 7 - Validação de dados da API](#aula-7---validação-de-dados-da-api)
-- [Próxima aula](#próxima-aula)
+    - [Aula 8 - Testes dos endpoints e cobertura da API](#aula-8---testes-dos-endpoints-e-cobertura-da-api)
+    - [Próxima aula](#próxima-aula)
 - [Resumo](#resumo)
 - [Autor](#autor)
 
@@ -304,33 +305,75 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Execução da suíte completa de testes com sucesso: **10 testes, 0 falhas, 0 erros**
 - Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 
+### Aula 8 - Testes dos endpoints e cobertura da API
+
+- Criação de testes automatizados para o GET /api/service-requests
+- Teste de retorno 200 OK na consulta da lista
+- Validação da resposta JSON da consulta da lista
+- Criação de teste automatizado para o GET /api/service-requests/{id}
+- Teste de retorno 200 OK para uma solicitação existente
+- Validação dos campos retornados no JSON da solicitação
+- Criação de teste automatizado para o GET /api/service-requests/{id} com ID inexistente
+- Teste de retorno 404 Not Found para solicitação inexistente
+- Validação do JSON de erro retornado pelo GlobalExceptionHandler
+- Criação de teste automatizado para o POST /api/service-requests
+- Teste de retorno 201 Created para criação válida
+- Validação do JSON retornado após a criação
+- Criação de teste automatizado para o PUT /api/service-requests/{id}
+- Teste de retorno 200 OK para atualização válida
+- Validação do JSON retornado após a atualização
+- Criação de teste automatizado para o PUT /api/service-requests/{id} com ID inexistente
+- Teste de retorno 404 Not Found para atualização de solicitação inexistente
+- Revisão dos testes de 400 Bad Request
+- Revisão dos testes de 404 Not Found
+- Utilização de MockMvc nos testes dos endpoints
+- Execução da suíte completa de testes com sucesso: 16 testes, 0 falhas, 0 erros
+- Empacotamento da aplicação com ./mvnw clean package executado com sucesso
+- Geração do arquivo JAR serviceflow-api-0.0.1-SNAPSHOT.jar
+
 ## Próxima aula
 
-### Aula 8 — Testes dos endpoints e cobertura da API
+### Aula 9 - Testes unitários e integração
 
-- Criação de testes automatizados para o `GET /api/service-requests`
-- Teste de retorno `200 OK` na consulta da lista
-- Criação de teste automatizado para o `GET /api/service-requests/{id}`
-- Teste de retorno `200 OK` para uma solicitação existente
-- Criação de teste automatizado para o `POST /api/service-requests`
-- Teste de retorno `201 Created` para criação válida
-- Criação de teste automatizado para o `PUT /api/service-requests/{id}`
-- Teste de retorno `200 OK` para atualização válida
-- Revisão dos testes de `400 Bad Request`
-- Revisão dos testes de `404 Not Found`
-- Validação da resposta JSON dos endpoints
-- Execução da suíte completa de testes
-- Empacotamento da aplicação com `./mvnw clean package`
+- Revisão da diferença entre testes unitários e testes de integração
+- Revisão dos testes de Service utilizando Mockito
+- Revisão dos testes de Repository
+- Avaliação do isolamento dos testes
+- Organização da estratégia de testes da aplicação
+- Identificação dos testes que acessam o contexto do Spring
+- Evolução da cobertura de testes sem adicionar complexidade desnecessária
 
 ## Resumo
-Aula 1 → Configuração inicial e integração com PostgreSQL<br>
-Aula 2 → JPA, Hibernate e persistência de dados<br>
-Aula 3 → Entidade ServiceRequest e Repository<br>
-Aula 4 → Camadas Service e Controller e primeiros endpoints REST<br>
-Aula 5 → Consulta e atualização de solicitações por ID<br>
-Aula 6 → Tratamento de exceções e respostas HTTP<br>
-Aula 7 → Validação de dados da API<br>
-Aula 8 → Testes dos endpoints e cobertura da API
+✓ Aula 1 → Configuração inicial e integração com PostgreSQL<br>
+✓ Aula 2 → JPA, Hibernate e persistência de dados<br>
+✓ Aula 3 → Entidade ServiceRequest e Repository<br>
+✓ Aula 4 → Camadas Service e Controller e primeiros endpoints REST<br>
+✓ Aula 5 → Consulta e atualização de solicitações por ID<br>
+✓ Aula 6 → Tratamento de exceções e respostas HTTP<br>
+✓ Aula 7 → Validação de dados da API<br>
+✓ Aula 8 → Testes dos endpoints e cobertura da API
+- [ ] Aula 9 → Testes unitários e integração
+- [ ] Aula 10 → DTOs e separação entre entidade e contrato da API
+- [ ] Aula 11 → Mapeamento entre DTOs e entidades
+- [ ] Aula 12 → Organização e melhoria da arquitetura da API
+- [ ] Aula 13 → Alteração de status das solicitações
+- [ ] Aula 14 → Regras de negócio para solicitações
+- [ ] Aula 15 → Paginação e ordenação
+- [ ] Aula 16 → Documentação da API com Swagger/OpenAPI
+- [ ] Aula 17 → Testes adicionais e melhoria da cobertura
+- [ ] Aula 18 → Segurança e autenticação da API
+- [ ] Aula 19 → Perfis e configurações de ambiente
+- [ ] Aula 20 → Preparação da aplicação para execução em ambiente de produção
+- [ ] Aula 21 → Dockerização da aplicação
+- [ ] Aula 22 → Integração entre aplicação e PostgreSQL utilizando Docker Compose
+- [ ] Aula 23 → Logs e observabilidade básica
+- [ ] Aula 24 → Tratamento de configurações e variáveis de ambiente
+- [ ] Aula 25 → Revisão geral e refatoração
+- [ ] Aula 26 → Testes finais e validação da API
+- [ ] Aula 27 → Preparação do projeto para portfólio
+- [ ] Aula 28 → Documentação final e README profissional
+- [ ] Aula 29 → Revisão técnica para entrevistas
+- [ ] Aula 30 → Finalização do projeto e apresentação técnica
 
 ## Autor
 
