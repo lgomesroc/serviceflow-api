@@ -401,8 +401,8 @@ PostgreSQL
 ✓ Aula 5 → Consulta e atualização de solicitações por ID<br>
 ✓ Aula 6 → Tratamento de exceções e respostas HTTP<br>
 ✓ Aula 7 → Validação de dados da API<br>
-✓ Aula 8 → Testes dos endpoints e cobertura da API
-✓ Aula 9 → Testes unitários e integração
+✓ Aula 8 → Testes dos endpoints e cobertura da API<br>
+✓ Aula 9 → Testes unitários e integração<br>
 - [ ] Aula 10 → DTOs e separação entre entidade e contrato da API
 - [ ] Aula 11 → Mapeamento entre DTOs e entidades
 - [ ] Aula 12 → Organização e melhoria da arquitetura da API
