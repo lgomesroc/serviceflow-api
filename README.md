@@ -23,7 +23,8 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 6 - Tratamento de exceções e respostas HTTP](#aula-6---tratamento-de-exceções-e-respostas-http)
     - [Aula 7 - Validação de dados da API](#aula-7---validação-de-dados-da-api)
     - [Aula 8 - Testes dos endpoints e cobertura da API](#aula-8---testes-dos-endpoints-e-cobertura-da-api)
-    - [Próxima aula](#próxima-aula)
+    - [Aula 9 - Testes unitários e integração](#aula-9---testes-unitários-e-integração)
+- [Próxima aula](#próxima-aula)
 - [Resumo](#resumo)
 - [Autor](#autor)
 
@@ -330,18 +331,67 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Execução da suíte completa de testes com sucesso: **16 testes, 0 falhas, 0 erros**
 - Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 - Geração do arquivo JAR `serviceflow-api-0.0.1-SNAPSHOT.jar`
-
-## Próxima aula
-
 ### Aula 9 - Testes unitários e integração
 
 - Revisão da diferença entre testes unitários e testes de integração
-- Revisão dos testes de Service utilizando Mockito
-- Revisão dos testes de Repository
-- Avaliação do isolamento dos testes
-- Organização da estratégia de testes da aplicação
-- Identificação dos testes que acessam o contexto do Spring
-- Evolução da cobertura de testes sem adicionar complexidade desnecessária
+- Revisão dos testes da camada Service utilizando Mockito
+- Validação do isolamento da camada Service em relação ao PostgreSQL
+- Revisão do teste de integração do Repository com PostgreSQL
+- Revisão dos testes de integração dos endpoints utilizando MockMvc
+- Identificação dos testes que carregam o contexto do Spring através de `@SpringBootTest`
+- Identificação do teste de contexto da aplicação através de `ServiceflowApiApplicationTests`
+- Fortalecimento do teste de atualização da camada Service com validação dos dados alterados
+- Melhoria do isolamento dos testes de Controller evitando dependência de IDs previamente existentes no banco
+- Criação dos dados necessários durante os próprios testes de integração
+- Validação da estratégia de testes por responsabilidade: Service, Repository, Controller e contexto da aplicação
+- Execução da suíte completa de testes com sucesso: **16 testes, 0 falhas, 0 erros**
+- Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
+- Geração do arquivo JAR `serviceflow-api-0.0.1-SNAPSHOT.jar`
+
+## Próxima aula
+
+Aula 10 — DTOs e separação entre entidade e contrato da API
+
+- Introdução ao conceito de DTO (Data Transfer Object)
+- Entender por que não é ideal expor diretamente a entidade JPA na API
+- Identificar o acoplamento atual entre ServiceRequest e o contrato HTTP
+- Criação dos DTOs necessários para a API
+- Separação entre modelo de persistência e modelo de entrada/saída da API
+- Atualização dos endpoints para receber DTOs
+- Atualização dos endpoints para retornar DTOs
+- Preservação das validações com @Valid
+- Avaliação do impacto da mudança nos testes existentes
+- Atualização dos testes para trabalhar com os novos contratos
+- Execução da suíte completa de testes
+- Evolução da arquitetura sem adicionar complexidade desnecessária
+
+Hoje temos aproximadamente:
+```text
+HTTP
+↓
+ServiceRequest
+↓
+Service
+↓
+Repository
+↓
+PostgreSQL
+```
+
+Na Aula 10 vamos começar a chegar em:
+```
+HTTP
+↓
+DTO
+↓
+Service
+↓
+Entity
+↓
+Repository
+↓
+PostgreSQL
+```
 
 ## Resumo
 ✓ Aula 1 → Configuração inicial e integração com PostgreSQL<br>
@@ -352,7 +402,7 @@ O projeto está sendo construído de forma incremental, começando pela configur
 ✓ Aula 6 → Tratamento de exceções e respostas HTTP<br>
 ✓ Aula 7 → Validação de dados da API<br>
 ✓ Aula 8 → Testes dos endpoints e cobertura da API
-- [ ] Aula 9 → Testes unitários e integração
+✓ Aula 9 → Testes unitários e integração
 - [ ] Aula 10 → DTOs e separação entre entidade e contrato da API
 - [ ] Aula 11 → Mapeamento entre DTOs e entidades
 - [ ] Aula 12 → Organização e melhoria da arquitetura da API
