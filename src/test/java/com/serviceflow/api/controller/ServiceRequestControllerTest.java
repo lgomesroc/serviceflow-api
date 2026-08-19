@@ -1,5 +1,7 @@
 package com.serviceflow.api.controller;
 
+import com.serviceflow.api.entity.ServiceRequest;
+import com.serviceflow.api.repository.ServiceRequestRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -20,6 +23,9 @@ class ServiceRequestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ServiceRequestRepository repository;
 
     @Test
     void shouldReturnOkWhenGettingServiceRequests() throws Exception {
@@ -37,12 +43,20 @@ class ServiceRequestControllerTest {
     @Test
     void shouldReturnOkWhenGettingServiceRequestById() throws Exception {
 
-        mockMvc.perform(get("/api/service-requests/14"))
+        ServiceRequest request = new ServiceRequest();
+        request.setTitle("Teste de consulta por ID");
+        request.setDescription("Solicitação criada pelo teste de integração");
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(get("/api/service-requests/" + savedRequest.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(14))
-                .andExpect(jsonPath("$.title").value("Computador não liga - atualizado"))
+                .andExpect(jsonPath("$.id").value(savedRequest.getId()))
+                .andExpect(jsonPath("$.title").value("Teste de consulta por ID"))
                 .andExpect(jsonPath("$.description").value(
-                        "O computador continua sem iniciar após pressionar o botão"))
+                        "Solicitação criada pelo teste de integração"))
                 .andExpect(jsonPath("$.status").value("PENDING"))
                 .andExpect(jsonPath("$.createdAt").exists());
     }
@@ -80,7 +94,15 @@ class ServiceRequestControllerTest {
     @Test
     void shouldReturnOkWhenUpdatingValidServiceRequest() throws Exception {
 
-        mockMvc.perform(put("/api/service-requests/15")
+        ServiceRequest request = new ServiceRequest();
+        request.setTitle("Teste de atualização");
+        request.setDescription("Solicitação criada para teste de atualização");
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(put("/api/service-requests/" + savedRequest.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -89,7 +111,7 @@ class ServiceRequestControllerTest {
                                 }
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(15))
+                .andExpect(jsonPath("$.id").value(savedRequest.getId()))
                 .andExpect(jsonPath("$.title").value(
                         "Teste de atualização automatizada"))
                 .andExpect(jsonPath("$.description").value(
@@ -150,7 +172,15 @@ class ServiceRequestControllerTest {
     @Test
     void shouldReturnBadRequestWhenUpdatingWithBlankTitle() throws Exception {
 
-        mockMvc.perform(put("/api/service-requests/14")
+        ServiceRequest request = new ServiceRequest();
+        request.setTitle("Solicitação válida");
+        request.setDescription("Descrição válida");
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(put("/api/service-requests/" + savedRequest.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -166,7 +196,15 @@ class ServiceRequestControllerTest {
     @Test
     void shouldReturnBadRequestWhenUpdatingWithBlankDescription() throws Exception {
 
-        mockMvc.perform(put("/api/service-requests/14")
+        ServiceRequest request = new ServiceRequest();
+        request.setTitle("Solicitação válida");
+        request.setDescription("Descrição válida");
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(put("/api/service-requests/" + savedRequest.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

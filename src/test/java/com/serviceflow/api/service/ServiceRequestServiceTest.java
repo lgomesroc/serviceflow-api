@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -51,6 +52,12 @@ class ServiceRequestServiceTest {
         ServiceRequest result = service.update(1L, updatedRequest);
 
         assertSame(existingRequest, result);
+        assertEquals("Notebook não liga - atualizado", result.getTitle());
+        assertEquals(
+                "Equipamento continua sem apresentar sinais de energia",
+                result.getDescription()
+        );
+
         verify(repository).findById(1L);
         verify(repository).save(existingRequest);
     }
@@ -81,5 +88,4 @@ class ServiceRequestServiceTest {
 
         verify(repository).findById(999L);
     }
-
 }
