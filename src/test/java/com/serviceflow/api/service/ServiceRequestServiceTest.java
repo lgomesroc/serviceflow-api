@@ -1,5 +1,7 @@
 package com.serviceflow.api.service;
 
+import com.serviceflow.api.dto.ServiceRequestRequest;
+import com.serviceflow.api.dto.ServiceRequestResponse;
 import com.serviceflow.api.entity.ServiceRequest;
 import com.serviceflow.api.exception.ServiceRequestNotFoundException;
 import com.serviceflow.api.repository.ServiceRequestRepository;
@@ -10,10 +12,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class ServiceRequestServiceTest {
@@ -26,33 +29,55 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldCreateServiceRequest() {
-        ServiceRequest request = new ServiceRequest();
 
-        when(repository.save(request)).thenReturn(request);
+        ServiceRequestRequest request = new ServiceRequestRequest();
+        request.setTitle("Notebook não liga");
+        request.setDescription("Equipamento não apresenta sinais de energia");
 
-        ServiceRequest result = service.create(request);
+        ServiceRequest savedRequest = new ServiceRequest();
+        savedRequest.setTitle(request.getTitle());
+        savedRequest.setDescription(request.getDescription());
 
-        assertSame(request, result);
-        verify(repository).save(request);
+        when(repository.save(org.mockito.ArgumentMatchers.any(ServiceRequest.class)))
+                .thenReturn(savedRequest);
+
+        ServiceRequestResponse result = service.create(request);
+
+        assertEquals("Notebook não liga", result.getTitle());
+        assertEquals(
+                "Equipamento não apresenta sinais de energia",
+                result.getDescription()
+        );
+
+        verify(repository).save(org.mockito.ArgumentMatchers.any(ServiceRequest.class));
     }
 
     @Test
     void shouldUpdateServiceRequest() {
+
         ServiceRequest existingRequest = new ServiceRequest();
         existingRequest.setTitle("Notebook não liga");
         existingRequest.setDescription("Equipamento não apresenta sinais de energia");
 
-        ServiceRequest updatedRequest = new ServiceRequest();
+        ServiceRequestRequest updatedRequest = new ServiceRequestRequest();
         updatedRequest.setTitle("Notebook não liga - atualizado");
-        updatedRequest.setDescription("Equipamento continua sem apresentar sinais de energia");
+        updatedRequest.setDescription(
+                "Equipamento continua sem apresentar sinais de energia"
+        );
 
-        when(repository.findById(1L)).thenReturn(java.util.Optional.of(existingRequest));
-        when(repository.save(existingRequest)).thenReturn(existingRequest);
+        when(repository.findById(1L))
+                .thenReturn(Optional.of(existingRequest));
 
-        ServiceRequest result = service.update(1L, updatedRequest);
+        when(repository.save(existingRequest))
+                .thenReturn(existingRequest);
 
-        assertSame(existingRequest, result);
-        assertEquals("Notebook não liga - atualizado", result.getTitle());
+        ServiceRequestResponse result = service.update(1L, updatedRequest);
+
+        assertEquals(
+                "Notebook não liga - atualizado",
+                result.getTitle()
+        );
+
         assertEquals(
                 "Equipamento continua sem apresentar sinais de energia",
                 result.getDescription()
@@ -64,9 +89,13 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistingServiceRequest() {
-        ServiceRequest request = new ServiceRequest();
 
-        when(repository.findById(999L)).thenReturn(java.util.Optional.empty());
+        ServiceRequestRequest request = new ServiceRequestRequest();
+        request.setTitle("Solicitação inexistente");
+        request.setDescription("Solicitação que não existe");
+
+        when(repository.findById(999L))
+                .thenReturn(Optional.empty());
 
         assertThrows(
                 ServiceRequestNotFoundException.class,
@@ -79,7 +108,8 @@ class ServiceRequestServiceTest {
     @Test
     void shouldThrowExceptionWhenFindingNonExistingServiceRequest() {
 
-        when(repository.findById(999L)).thenReturn(java.util.Optional.empty());
+        when(repository.findById(999L))
+                .thenReturn(Optional.empty());
 
         assertThrows(
                 ServiceRequestNotFoundException.class,

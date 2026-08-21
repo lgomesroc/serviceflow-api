@@ -1,6 +1,7 @@
 package com.serviceflow.api.controller;
 
-import com.serviceflow.api.entity.ServiceRequest;
+import com.serviceflow.api.dto.ServiceRequestRequest;
+import com.serviceflow.api.dto.ServiceRequestResponse;
 import com.serviceflow.api.service.ServiceRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,28 +22,29 @@ public class ServiceRequestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ServiceRequest create(@Valid @RequestBody ServiceRequest serviceRequest) {
+    public ServiceRequestResponse create(
+            @Valid @RequestBody ServiceRequestRequest request) {
 
-        return service.create(serviceRequest);
+        return service.create(request);
     }
 
     @GetMapping
-    public List<ServiceRequest> findAll() {
+    public List<ServiceRequestResponse> findAll() {
 
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public ServiceRequest findById(@PathVariable Long id) {
+    public ServiceRequestResponse findById(@PathVariable Long id) {
+
         return service.findById(id);
     }
 
     @PutMapping("/{id}")
-    public ServiceRequest update(
+    public ServiceRequestResponse update(
             @PathVariable Long id,
-            @Valid @RequestBody ServiceRequest serviceRequest) {
+            @Valid @RequestBody ServiceRequestRequest request) {
 
-        return service.update(id, serviceRequest);
+        return service.update(id, request);
     }
-
 }

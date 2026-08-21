@@ -1,7 +1,6 @@
 package com.serviceflow.api.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 
@@ -13,11 +12,9 @@ public class ServiceRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
     @Column(nullable = false)
     private String title;
 
-    @NotBlank
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 

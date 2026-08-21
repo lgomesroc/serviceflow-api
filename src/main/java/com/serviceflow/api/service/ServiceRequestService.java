@@ -1,5 +1,7 @@
 package com.serviceflow.api.service;
 
+import com.serviceflow.api.dto.ServiceRequestRequest;
+import com.serviceflow.api.dto.ServiceRequestResponse;
 import com.serviceflow.api.entity.ServiceRequest;
 import com.serviceflow.api.exception.ServiceRequestNotFoundException;
 import com.serviceflow.api.repository.ServiceRequestRepository;
@@ -17,31 +19,57 @@ public class ServiceRequestService {
         this.repository = repository;
     }
 
-    public ServiceRequest create(ServiceRequest serviceRequest) {
+    public ServiceRequestResponse create(ServiceRequestRequest request) {
 
-        return repository.save(serviceRequest);
+        ServiceRequest serviceRequest = new ServiceRequest();
+
+        serviceRequest.setTitle(request.getTitle());
+        serviceRequest.setDescription(request.getDescription());
+
+        ServiceRequest savedRequest = repository.save(serviceRequest);
+
+        return toResponse(savedRequest);
     }
 
-    public List<ServiceRequest> findAll() {
+    public List<ServiceRequestResponse> findAll() {
 
-        return repository.findAll();
+        return repository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public ServiceRequest findById(Long id) {
+    public ServiceRequestResponse findById(Long id) {
 
-        return repository.findById(id)
+        ServiceRequest serviceRequest = repository.findById(id)
                 .orElseThrow(() -> new ServiceRequestNotFoundException(id));
+
+        return toResponse(serviceRequest);
     }
 
-    public ServiceRequest update(Long id, ServiceRequest serviceRequest) {
+    public ServiceRequestResponse update(
+            Long id,
+            ServiceRequestRequest request) {
 
         ServiceRequest existingRequest = repository.findById(id)
                 .orElseThrow(() -> new ServiceRequestNotFoundException(id));
 
-        existingRequest.setTitle(serviceRequest.getTitle());
-        existingRequest.setDescription(serviceRequest.getDescription());
+        existingRequest.setTitle(request.getTitle());
+        existingRequest.setDescription(request.getDescription());
 
-        return repository.save(existingRequest);
+        ServiceRequest updatedRequest = repository.save(existingRequest);
+
+        return toResponse(updatedRequest);
     }
 
+    private ServiceRequestResponse toResponse(ServiceRequest serviceRequest) {
+
+        return new ServiceRequestResponse(
+                serviceRequest.getId(),
+                serviceRequest.getTitle(),
+                serviceRequest.getDescription(),
+                serviceRequest.getStatus(),
+                serviceRequest.getCreatedAt()
+        );
+    }
 }
