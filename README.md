@@ -24,6 +24,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 7 - Validação de dados da API](#aula-7---validação-de-dados-da-api)
     - [Aula 8 - Testes dos endpoints e cobertura da API](#aula-8---testes-dos-endpoints-e-cobertura-da-api)
     - [Aula 9 - Testes unitários e integração](#aula-9---testes-unitários-e-integração)
+    - [Aula 10 - DTOs e separação entre entidade e contrato da API](#aula-10---dtos-e-separação-entre-entidade-e-contrato-da-api)
 - [Próxima aula](#próxima-aula)
 - [Resumo](#resumo)
 - [Autor](#autor)
@@ -70,32 +71,35 @@ serviceflow-api/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── com/serviceflow/api/
-│   │   │       ├── controller/
-│   │   │       │   └── ServiceRequestController.java
-│   │   │       ├── entity/
-│   │   │       │   ├── ServiceRequest.java
-│   │   │       │   └── ServiceRequestStatus.java
-│   │   │       ├── exception/ 
-│   │   │       │ ├── ErrorResponse.java
-│   │   │       │ ├── GlobalExceptionHandler.java 
-│   │   │       │ └── ServiceRequestNotFoundException.java
-│   │   │       ├── repository/
-│   │   │       │   └── ServiceRequestRepository.java
-│   │   │       ├── service/
-│   │   │       │   └── ServiceRequestService.java
-│   │   │       └── ServiceflowApiApplication.java
+│   │   │   │   ├── controller/
+│   │   │   │   │   └── ServiceRequestController.java
+│   │   │   │   ├── dto/
+│   │   │   │   │   ├── ServiceRequestRequest.java
+│   │   │   │   │   └── ServiceRequestResponse.java
+│   │   │   │   ├── entity/
+│   │   │   │   │   ├── ServiceRequest.java
+│   │   │   │   │   └── ServiceRequestStatus.java
+│   │   │   │   ├── exception/ 
+│   │   │   │   │ ├── ErrorResponse.java
+│   │   │   │   │ ├── GlobalExceptionHandler.java 
+│   │   │   │   │ └── ServiceRequestNotFoundException.java
+│   │   │   │   ├── repository/
+│   │   │   │   │   └── ServiceRequestRepository.java
+│   │   │   │   ├── service/
+│   │   │   │   │   └── ServiceRequestService.java
+│   │   │   │   └── ServiceflowApiApplication.java
 │   │   └── resources/
 │   │       └── application.properties
 │   └── test/
-│       └── java/
-│           └── com/serviceflow/api/
-│               ├── controller/
-│               │   └── ServiceRequestControllerTest.java
-│               ├── repository/
-│               │   └── ServiceRequestRepositoryTest.java
-│               ├── service/
-│               │   └── ServiceRequestServiceTest.java
-│               └── ServiceflowApiApplicationTests.java
+│   │   └── java/
+│   │   │   └── com/serviceflow/api/
+│   │   │   │   ├── controller/
+│   │   │   │   │   └── ServiceRequestControllerTest.java
+│   │   │   │   ├── repository/
+│   │   │   │   │   └── ServiceRequestRepositoryTest.java
+│   │   │   │   ├── service/
+│   │   │   │   │   └── ServiceRequestServiceTest.java
+│   │   │   │   └── ServiceflowApiApplicationTests.java
 ├── .gitignore
 ├── pom.xml
 ├── mvnw
@@ -331,6 +335,7 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Execução da suíte completa de testes com sucesso: **16 testes, 0 falhas, 0 erros**
 - Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 - Geração do arquivo JAR `serviceflow-api-0.0.1-SNAPSHOT.jar`
+
 ### Aula 9 - Testes unitários e integração
 
 - Revisão da diferença entre testes unitários e testes de integração
@@ -348,50 +353,34 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 - Geração do arquivo JAR `serviceflow-api-0.0.1-SNAPSHOT.jar`
 
-## Próxima aula
-
-Aula 10 — DTOs e separação entre entidade e contrato da API
+### Aula 10 - DTOs e separação entre entidade e contrato da API
 
 - Introdução ao conceito de DTO (Data Transfer Object)
-- Entender por que não é ideal expor diretamente a entidade JPA na API
-- Identificar o acoplamento atual entre ServiceRequest e o contrato HTTP
-- Criação dos DTOs necessários para a API
-- Separação entre modelo de persistência e modelo de entrada/saída da API
-- Atualização dos endpoints para receber DTOs
-- Atualização dos endpoints para retornar DTOs
-- Preservação das validações com @Valid
-- Avaliação do impacto da mudança nos testes existentes
-- Atualização dos testes para trabalhar com os novos contratos
-- Execução da suíte completa de testes
-- Evolução da arquitetura sem adicionar complexidade desnecessária
+- Separação entre o modelo de persistência e o contrato HTTP da API
+- Criação do `ServiceRequestRequest` para representar os dados de entrada
+- Criação do `ServiceRequestResponse` para representar os dados de saída
+- Remoção da exposição direta da entidade `ServiceRequest` pelo Controller
+- Atualização do Controller para receber `ServiceRequestRequest`
+- Atualização do Controller para retornar `ServiceRequestResponse`
+- Atualização da camada Service para converter DTOs e entidades
+- Preservação das validações com `@Valid` e `@NotBlank`
+- Remoção das validações HTTP da entidade JPA `ServiceRequest`
+- Atualização dos testes da camada Service para trabalhar com os novos DTOs
+- Revisão dos testes dos endpoints após a alteração do contrato da API
+- Execução da suíte completa de testes com sucesso: **16 testes, 0 falhas, 0 erros**
+- Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
+- Geração do arquivo JAR `serviceflow-api-0.0.1-SNAPSHOT.jar`
 
-Hoje temos aproximadamente:
-```text
-HTTP
-↓
-ServiceRequest
-↓
-Service
-↓
-Repository
-↓
-PostgreSQL
-```
+## Próxima aula
 
-Na Aula 10 vamos começar a chegar em:
-```
-HTTP
-↓
-DTO
-↓
-Service
-↓
-Entity
-↓
-Repository
-↓
-PostgreSQL
-```
+### Aula 11 — Mapeamento entre DTOs e entidades
+
+- Introdução ao conceito de mapeamento entre DTOs e entidades
+- Identificação das conversões atualmente realizadas na camada Service
+- Organização do código de conversão entre `ServiceRequestRequest`, `ServiceRequest` e `ServiceRequestResponse`
+- Avaliação da necessidade de uma classe específica para mapeamento
+- Aplicação do mapeamento sem adicionar complexidade desnecessária
+- Atualização dos testes após a reorganização
 
 ## Resumo
 ✓ Aula 1 → Configuração inicial e integração com PostgreSQL<br>
@@ -403,7 +392,7 @@ PostgreSQL
 ✓ Aula 7 → Validação de dados da API<br>
 ✓ Aula 8 → Testes dos endpoints e cobertura da API<br>
 ✓ Aula 9 → Testes unitários e integração<br>
-- [ ] Aula 10 → DTOs e separação entre entidade e contrato da API
+✓ Aula 10 → DTOs e separação entre entidade e contrato da API<br>
 - [ ] Aula 11 → Mapeamento entre DTOs e entidades
 - [ ] Aula 12 → Organização e melhoria da arquitetura da API
 - [ ] Aula 13 → Alteração de status das solicitações
@@ -424,6 +413,34 @@ PostgreSQL
 - [ ] Aula 28 → Documentação final e README profissional
 - [ ] Aula 29 → Revisão técnica para entrevistas
 - [ ] Aula 30 → Finalização do projeto e apresentação técnica
+
+Tínhamos aproximadamente:
+```text
+HTTP
+↓
+ServiceRequest
+↓
+Service
+↓
+Repository
+↓
+PostgreSQL
+```
+
+Agora temos:
+```
+HTTP
+↓
+DTO
+↓
+Service
+↓
+Entity
+↓
+Repository
+↓
+PostgreSQL
+```
 
 ## Autor
 
