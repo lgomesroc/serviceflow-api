@@ -25,6 +25,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 8 - Testes dos endpoints e cobertura da API](#aula-8---testes-dos-endpoints-e-cobertura-da-api)
     - [Aula 9 - Testes unitários e integração](#aula-9---testes-unitários-e-integração)
     - [Aula 10 - DTOs e separação entre entidade e contrato da API](#aula-10---dtos-e-separação-entre-entidade-e-contrato-da-api)
+    - [Aula 11 - Mapeamento entre DTOs e entidades](#aula-11---mapeamento-entre-dtos-e-entidades)
 - [Próxima aula](#próxima-aula)
 - [Resumo](#resumo)
 - [Autor](#autor)
@@ -371,16 +372,37 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 - Geração do arquivo JAR `serviceflow-api-0.0.1-SNAPSHOT.jar`
 
-## Próxima aula
-
-### Aula 11 — Mapeamento entre DTOs e entidades
+### Aula 11 - Mapeamento entre DTOs e entidades
 
 - Introdução ao conceito de mapeamento entre DTOs e entidades
-- Identificação das conversões atualmente realizadas na camada Service
-- Organização do código de conversão entre `ServiceRequestRequest`, `ServiceRequest` e `ServiceRequestResponse`
-- Avaliação da necessidade de uma classe específica para mapeamento
-- Aplicação do mapeamento sem adicionar complexidade desnecessária
-- Atualização dos testes após a reorganização
+- Identificação das conversões entre `ServiceRequestRequest`, `ServiceRequest` e `ServiceRequestResponse`
+- Identificação da conversão `ServiceRequestRequest → ServiceRequest` realizada durante a criação de solicitações
+- Identificação da conversão `ServiceRequest → ServiceRequestResponse` utilizada nas respostas da API
+- Extração da conversão `ServiceRequestRequest → ServiceRequest` para o método privado `toEntity()`
+- Manutenção da conversão `ServiceRequest → ServiceRequestResponse` através do método privado `toResponse()`
+- Manutenção da atualização diretamente sobre a entidade existente para preservar campos como `id`, `status` e `createdAt`
+- Avaliação da criação de uma classe específica para mapeamento
+- Decisão de não criar um `ServiceRequestMapper`, pois as conversões são simples, específicas e não apresentam complexidade suficiente para justificar uma nova classe
+- Aplicação do mapeamento mantendo a estrutura atual da camada Service
+- Evitada a introdução de bibliotecas ou frameworks de mapeamento para manter a implementação simples e adequada ao nível júnior
+- Execução da suíte completa de testes com sucesso: **16 testes, 0 falhas, 0 erros**
+- Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
+- Commit da alteração com `refactor: organize dto to entity mapping`
+
+## Próxima aula
+
+### Aula 12 — Organização e melhoria da arquitetura da API
+
+- Análise da estrutura atual de Controller, Service, Repository e Entity
+- Revisão das responsabilidades de cada camada
+- Verificação da separação de responsabilidades entre as camadas
+- Identificação de responsabilidades que possam estar misturadas
+- Revisão da estrutura de pacotes
+- Revisão da nomenclatura de classes e métodos
+- Identificação de possíveis simplificações e melhorias no código
+- Avaliação de melhorias arquiteturais sem adicionar complexidade desnecessária
+- Refatoração apenas quando houver justificativa técnica
+- Execução da suíte de testes após as alterações
 
 ## Resumo
 ✓ Aula 1 → Configuração inicial e integração com PostgreSQL<br>
@@ -393,7 +415,7 @@ O projeto está sendo construído de forma incremental, começando pela configur
 ✓ Aula 8 → Testes dos endpoints e cobertura da API<br>
 ✓ Aula 9 → Testes unitários e integração<br>
 ✓ Aula 10 → DTOs e separação entre entidade e contrato da API<br>
-- [ ] Aula 11 → Mapeamento entre DTOs e entidades
+✓ Aula 11 → Mapeamento entre DTOs e entidades<br>
 - [ ] Aula 12 → Organização e melhoria da arquitetura da API
 - [ ] Aula 13 → Alteração de status das solicitações
 - [ ] Aula 14 → Regras de negócio para solicitações
