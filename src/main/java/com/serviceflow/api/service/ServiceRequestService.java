@@ -21,10 +21,7 @@ public class ServiceRequestService {
 
     public ServiceRequestResponse create(ServiceRequestRequest request) {
 
-        ServiceRequest serviceRequest = new ServiceRequest();
-
-        serviceRequest.setTitle(request.getTitle());
-        serviceRequest.setDescription(request.getDescription());
+        ServiceRequest serviceRequest = toEntity(request);
 
         ServiceRequest savedRequest = repository.save(serviceRequest);
 
@@ -60,6 +57,16 @@ public class ServiceRequestService {
         ServiceRequest updatedRequest = repository.save(existingRequest);
 
         return toResponse(updatedRequest);
+    }
+
+    private ServiceRequest toEntity(ServiceRequestRequest request) {
+
+        ServiceRequest serviceRequest = new ServiceRequest();
+
+        serviceRequest.setTitle(request.getTitle());
+        serviceRequest.setDescription(request.getDescription());
+
+        return serviceRequest;
     }
 
     private ServiceRequestResponse toResponse(ServiceRequest serviceRequest) {
