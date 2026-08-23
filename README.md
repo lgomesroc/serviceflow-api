@@ -26,22 +26,25 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 9 - Testes unitários e integração](#aula-9---testes-unitários-e-integração)
     - [Aula 10 - DTOs e separação entre entidade e contrato da API](#aula-10---dtos-e-separação-entre-entidade-e-contrato-da-api)
     - [Aula 11 - Mapeamento entre DTOs e entidades](#aula-11---mapeamento-entre-dtos-e-entidades)
+    - [Aula 12 - Organização e melhoria da arquitetura da API](#aula-12---organização-e-melhoria-da-arquitetura-da-api)
 - [Próxima aula](#próxima-aula)
 - [Resumo](#resumo)
 - [Autor](#autor)
 
 ## Tecnologias
 
-* Java 21
-* Spring Boot 4
-* Spring Web MVC
-* Spring Data JPA
-* Hibernate
-* PostgreSQL
-* Maven
-* Docker
-* JUnit
-* Mockito
+* Java 21 — versão LTS do Java utilizada no projeto, oferecendo estabilidade, recursos modernos da linguagem e suporte de longo prazo.
+* Spring Boot 4 — escolhido para simplificar a configuração e o desenvolvimento da aplicação, permitindo estruturar a API REST sem configurações desnecessárias.
+* Spring Web MVC — utilizado para criação dos Controllers e implementação dos endpoints HTTP da API REST.
+* Spring Data JPA — utilizado para simplificar o acesso aos dados e a implementação do Repository, reduzindo código repetitivo de persistência.
+* Hibernate — utilizado como implementação JPA para realizar o mapeamento entre as entidades Java e as tabelas do banco de dados.
+* PostgreSQL — escolhido como banco de dados relacional por ser robusto, amplamente utilizado em aplicações corporativas e adequado ao modelo de dados do projeto.
+* Maven — utilizado para gerenciamento de dependências, configuração do projeto e execução do ciclo de build e testes.
+* Docker — utilizado para executar o PostgreSQL em ambiente local de forma isolada e reproduzível, sem necessidade de instalar o banco diretamente no sistema operacional.
+* JUnit — utilizado para criação e execução dos testes automatizados.
+* Mockito — utilizado nos testes unitários para criar mocks das dependências e permitir o isolamento da camada Service.
+
+> As tecnologias foram escolhidas considerando o objetivo do projeto: construir uma API REST com uma stack comum no desenvolvimento backend corporativo, mantendo a implementação simples e adequada ao nível júnior.
 
 ## Objetivo
 
@@ -49,7 +52,9 @@ O ServiceFlow tem como objetivo simular uma API de gerenciamento de chamados de 
 
 O projeto será desenvolvido de forma incremental, priorizando uma implementação simples e adequada ao nível júnior, sem adicionar complexidade desnecessária.
 
-## Funcionalidades planejadas
+## Funcionalidades
+
+### Implementadas
 
 * Cadastro de usuários
 * Cadastro de chamados
@@ -61,6 +66,12 @@ O projeto será desenvolvido de forma incremental, priorizando uma implementaç�
 * Persistência com PostgreSQL
 * Tratamento de erros da API
 * Testes automatizados
+
+### Planejadas
+
+- [ ] Cadastro de usuários
+- [ ] Alteração de status
+- [ ] Associação de chamados a usuários
 
 ## Estrutura do projeto
 
@@ -389,10 +400,7 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Empacotamento da aplicação com `./mvnw clean package` executado com sucesso
 - Commit da alteração com `refactor: organize dto to entity mapping`
 
-## Próxima aula
-
-### Aula 12 — Organização e melhoria da arquitetura da API
-
+### Aula 12 - Organização e melhoria da arquitetura da API
 - Análise da estrutura atual de Controller, Service, Repository e Entity
 - Revisão das responsabilidades de cada camada
 - Verificação da separação de responsabilidades entre as camadas
@@ -401,8 +409,30 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Revisão da nomenclatura de classes e métodos
 - Identificação de possíveis simplificações e melhorias no código
 - Avaliação de melhorias arquiteturais sem adicionar complexidade desnecessária
-- Refatoração apenas quando houver justificativa técnica
-- Execução da suíte de testes após as alterações
+- Verificação da utilização dos DTOs no fluxo da API
+- Confirmação de que o Controller não contém regras de negócio
+- Confirmação de que o Repository permanece responsável pela persistência
+- Confirmação de que o Service concentra a lógica de aplicação e o mapeamento simples entre DTOs e entidades
+- Avaliação da necessidade de criação de uma classe `ServiceRequestMapper`
+- Decisão de não criar um Mapper, pois as conversões continuam simples e específicas
+- Avaliação da necessidade de novas camadas ou abstrações
+- Decisão de não adicionar novas camadas ou abstrações por falta de justificativa técnica
+- Manutenção da arquitetura atual por estar adequada ao tamanho e ao objetivo do projeto
+- Refatoração estrutural não realizada por não haver necessidade técnica
+- Execução da suíte completa de testes com sucesso: **16 testes, 0 falhas, 0 erros**
+- Confirmação do `BUILD SUCCESS`
+
+## Próxima aula
+
+### Aula 13 — Alteração de status das solicitações
+
+- Revisão do enum ServiceRequestStatus
+- Implementação da alteração de status de uma solicitação
+- Definição do fluxo de alteração de status entre Controller, Service e Repository
+- Validação da solicitação antes da alteração
+- Tratamento de solicitação inexistente
+- Atualização dos testes relacionados à alteração de status
+- Execução da suíte completa de testes após a implementação
 
 ## Resumo
 ✓ Aula 1 → Configuração inicial e integração com PostgreSQL<br>
@@ -416,7 +446,7 @@ O projeto está sendo construído de forma incremental, começando pela configur
 ✓ Aula 9 → Testes unitários e integração<br>
 ✓ Aula 10 → DTOs e separação entre entidade e contrato da API<br>
 ✓ Aula 11 → Mapeamento entre DTOs e entidades<br>
-- [ ] Aula 12 → Organização e melhoria da arquitetura da API
+✓ Aula 12 → Organização e melhoria da arquitetura da API<br>
 - [ ] Aula 13 → Alteração de status das solicitações
 - [ ] Aula 14 → Regras de negócio para solicitações
 - [ ] Aula 15 → Paginação e ordenação
@@ -463,6 +493,8 @@ Repository
 ↓
 PostgreSQL
 ```
+
+> Na Aula 12, a arquitetura foi revisada sem a necessidade de adicionar novas camadas ou abstrações. A estrutura atual permanece adequada ao tamanho e ao objetivo do projeto.
 
 ## Autor
 
