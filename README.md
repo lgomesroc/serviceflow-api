@@ -27,6 +27,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 10 - DTOs e separação entre entidade e contrato da API](#aula-10---dtos-e-separação-entre-entidade-e-contrato-da-api)
     - [Aula 11 - Mapeamento entre DTOs e entidades](#aula-11---mapeamento-entre-dtos-e-entidades)
     - [Aula 12 - Organização e melhoria da arquitetura da API](#aula-12---organização-e-melhoria-da-arquitetura-da-api)
+      - [Aula 13 - Alteração de status das solicitações](#aula-13---alteração-de-status-das-solicitações)
 - [Próxima aula](#próxima-aula)
 - [Resumo](#resumo)
 - [Autor](#autor)
@@ -87,7 +88,8 @@ serviceflow-api/
 │   │   │   │   │   └── ServiceRequestController.java
 │   │   │   │   ├── dto/
 │   │   │   │   │   ├── ServiceRequestRequest.java
-│   │   │   │   │   └── ServiceRequestResponse.java
+│   │   │   │   │   ├── ServiceRequestResponse.java
+│   │   │   │   │   └── ServiceRequestStatusRequest.java
 │   │   │   │   ├── entity/
 │   │   │   │   │   ├── ServiceRequest.java
 │   │   │   │   │   └── ServiceRequestStatus.java
@@ -422,16 +424,43 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Execução da suíte completa de testes com sucesso: **16 testes, 0 falhas, 0 erros**
 - Confirmação do `BUILD SUCCESS`
 
+### Aula 13 - Alteração de status das solicitações
+
+- Revisão do enum `ServiceRequestStatus`
+- Criação do DTO `ServiceRequestStatusRequest` para representar a alteração de status
+- Implementação do endpoint `PATCH /api/service-requests/{id}/status`
+- Definição do fluxo de alteração de status entre Controller, Service e Repository
+- Validação do status recebido através de `@NotNull`
+- Validação da existência da solicitação antes da alteração
+- Tratamento de solicitação inexistente através de `ServiceRequestNotFoundException`
+- Atualização do status diretamente na entidade existente, preservando os demais dados da solicitação
+- Persistência do novo status através do `ServiceRequestRepository`
+- Retorno da solicitação atualizada através de `ServiceRequestResponse`
+- Criação de teste unitário para alteração de status
+- Criação de teste unitário para alteração de status de solicitação inexistente
+- Criação de testes de Controller para alteração de status
+- Criação de teste de validação para status nulo
+- Validação manual do `PATCH /api/service-requests/{id}/status` através de `curl`
+- Validação manual da persistência do novo status através do `GET /api/service-requests/{id}`
+- Validação manual do retorno `404 Not Found` para solicitação inexistente
+- Execução da suíte completa de testes com sucesso: **20 testes, 0 falhas, 0 erros**
+- Confirmação do `BUILD SUCCESS`
+
 ## Próxima aula
 
-### Aula 13 — Alteração de status das solicitações
+### Aula 14 - Regras de negócio para solicitações
 
-- Revisão do enum ServiceRequestStatus
-- Implementação da alteração de status de uma solicitação
-- Definição do fluxo de alteração de status entre Controller, Service e Repository
-- Validação da solicitação antes da alteração
-- Tratamento de solicitação inexistente
-- Atualização dos testes relacionados à alteração de status
+- Definição das regras de transição entre os status das solicitações
+- Validação das transições permitidas entre `PENDING`, `IN_PROGRESS`, `COMPLETED` e `CANCELLED`
+- Impedimento de transições inválidas de status
+- Impedimento de alteração de solicitações que estejam em status final
+- Centralização das regras de negócio na camada Service
+- Criação de exceção específica para regras de negócio inválidas
+- Tratamento global das exceções de regra de negócio
+- Definição das respostas HTTP para violações das regras
+- Criação de testes unitários para as transições permitidas
+- Criação de testes unitários para as transições não permitidas
+- Criação de testes de Controller para validação das regras de negócio
 - Execução da suíte completa de testes após a implementação
 
 ## Resumo
@@ -447,7 +476,7 @@ O projeto está sendo construído de forma incremental, começando pela configur
 ✓ Aula 10 → DTOs e separação entre entidade e contrato da API<br>
 ✓ Aula 11 → Mapeamento entre DTOs e entidades<br>
 ✓ Aula 12 → Organização e melhoria da arquitetura da API<br>
-- [ ] Aula 13 → Alteração de status das solicitações
+✓ Aula 13 → Alteração de status das solicitações<br>
 - [ ] Aula 14 → Regras de negócio para solicitações
 - [ ] Aula 15 → Paginação e ordenação
 - [ ] Aula 16 → Documentação da API com Swagger/OpenAPI
