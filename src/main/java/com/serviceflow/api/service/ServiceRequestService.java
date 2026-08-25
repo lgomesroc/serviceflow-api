@@ -2,9 +2,11 @@ package com.serviceflow.api.service;
 
 import com.serviceflow.api.dto.ServiceRequestRequest;
 import com.serviceflow.api.dto.ServiceRequestResponse;
+import com.serviceflow.api.dto.ServiceRequestStatusRequest;
 import com.serviceflow.api.entity.ServiceRequest;
 import com.serviceflow.api.exception.ServiceRequestNotFoundException;
 import com.serviceflow.api.repository.ServiceRequestRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,12 +17,10 @@ public class ServiceRequestService {
     private final ServiceRequestRepository repository;
 
     public ServiceRequestService(ServiceRequestRepository repository) {
-
         this.repository = repository;
     }
 
     public ServiceRequestResponse create(ServiceRequestRequest request) {
-
         ServiceRequest serviceRequest = toEntity(request);
 
         ServiceRequest savedRequest = repository.save(serviceRequest);
@@ -29,7 +29,6 @@ public class ServiceRequestService {
     }
 
     public List<ServiceRequestResponse> findAll() {
-
         return repository.findAll()
                 .stream()
                 .map(this::toResponse)
@@ -37,7 +36,6 @@ public class ServiceRequestService {
     }
 
     public ServiceRequestResponse findById(Long id) {
-
         ServiceRequest serviceRequest = repository.findById(id)
                 .orElseThrow(() -> new ServiceRequestNotFoundException(id));
 
@@ -59,8 +57,21 @@ public class ServiceRequestService {
         return toResponse(updatedRequest);
     }
 
-    private ServiceRequest toEntity(ServiceRequestRequest request) {
+    public ServiceRequestResponse updateStatus(
+            Long id,
+            ServiceRequestStatusRequest request) {
 
+        ServiceRequest existingRequest = repository.findById(id)
+                .orElseThrow(() -> new ServiceRequestNotFoundException(id));
+
+        existingRequest.setStatus(request.getStatus());
+
+        ServiceRequest updatedRequest = repository.save(existingRequest);
+
+        return toResponse(updatedRequest);
+    }
+
+    private ServiceRequest toEntity(ServiceRequestRequest request) {
         ServiceRequest serviceRequest = new ServiceRequest();
 
         serviceRequest.setTitle(request.getTitle());
@@ -70,7 +81,6 @@ public class ServiceRequestService {
     }
 
     private ServiceRequestResponse toResponse(ServiceRequest serviceRequest) {
-
         return new ServiceRequestResponse(
                 serviceRequest.getId(),
                 serviceRequest.getTitle(),
