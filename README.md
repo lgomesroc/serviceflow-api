@@ -27,7 +27,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 10 - DTOs e separação entre entidade e contrato da API](#aula-10---dtos-e-separação-entre-entidade-e-contrato-da-api)
     - [Aula 11 - Mapeamento entre DTOs e entidades](#aula-11---mapeamento-entre-dtos-e-entidades)
     - [Aula 12 - Organização e melhoria da arquitetura da API](#aula-12---organização-e-melhoria-da-arquitetura-da-api)
-      - [Aula 13 - Alteração de status das solicitações](#aula-13---alteração-de-status-das-solicitações)
+    - [Aula 13 - Alteração de status das solicitações](#aula-13---alteração-de-status-das-solicitações)
 - [Próxima aula](#próxima-aula)
 - [Resumo](#resumo)
 - [Autor](#autor)
