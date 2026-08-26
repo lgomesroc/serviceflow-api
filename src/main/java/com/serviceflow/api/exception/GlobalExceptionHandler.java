@@ -25,6 +25,20 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
+    @ExceptionHandler(InvalidServiceRequestStateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidServiceRequestState(
+            InvalidServiceRequestStateException exception) {
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(errorResponse);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
             MethodArgumentNotValidException exception) {
