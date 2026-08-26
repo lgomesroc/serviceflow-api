@@ -36,16 +36,16 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 
 ## Tecnologias
 
-* Java 21 — versão LTS do Java utilizada no projeto, oferecendo estabilidade, recursos modernos da linguagem e suporte de longo prazo.
-* Spring Boot 4 — escolhido para simplificar a configuração e o desenvolvimento da aplicação, permitindo estruturar a API REST sem configurações desnecessárias.
-* Spring Web MVC — utilizado para criação dos Controllers e implementação dos endpoints HTTP da API REST.
-* Spring Data JPA — utilizado para simplificar o acesso aos dados e a implementação do Repository, reduzindo código repetitivo de persistência.
-* Hibernate — utilizado como implementação JPA para realizar o mapeamento entre as entidades Java e as tabelas do banco de dados.
-* PostgreSQL — escolhido como banco de dados relacional por ser robusto, amplamente utilizado em aplicações corporativas e adequado ao modelo de dados do projeto.
-* Maven — utilizado para gerenciamento de dependências, configuração do projeto e execução do ciclo de build e testes.
-* Docker — utilizado para executar o PostgreSQL em ambiente local de forma isolada e reproduzível, sem necessidade de instalar o banco diretamente no sistema operacional.
-* JUnit — utilizado para criação e execução dos testes automatizados.
-* Mockito — utilizado nos testes unitários para criar mocks das dependências e permitir o isolamento da camada Service.
+* **Java 21** — versão LTS do Java utilizada no projeto, oferecendo estabilidade, recursos modernos da linguagem e suporte de longo prazo.
+* **Spring Boot 4** — escolhido para simplificar a configuração e o desenvolvimento da aplicação, permitindo estruturar a API REST sem configurações desnecessárias.
+* **Spring Web MVC** — utilizado para criação dos Controllers e implementação dos endpoints HTTP da API REST.
+* **Spring Data JPA** — utilizado para simplificar o acesso aos dados e a implementação do Repository, reduzindo código repetitivo de persistência.
+* **Hibernate** — utilizado como implementação JPA para realizar o mapeamento entre as entidades Java e as tabelas do banco de dados.
+* **PostgreSQL** — escolhido como banco de dados relacional por ser robusto, amplamente utilizado em aplicações corporativas e adequado ao modelo de dados do projeto.
+* **Maven** — utilizado para gerenciamento de dependências, configuração do projeto e execução do ciclo de build e testes.
+* **Docker** — utilizado para executar o PostgreSQL em ambiente local de forma isolada e reproduzível, sem necessidade de instalar o banco diretamente no sistema operacional.
+* **JUnit** — utilizado para criação e execução dos testes automatizados.
+* **Mockito** — utilizado nos testes unitários para criar mocks das dependências e permitir o isolamento da camada Service.
 
 > As tecnologias foram escolhidas considerando o objetivo do projeto: construir uma API REST com uma stack comum no desenvolvimento backend corporativo, mantendo a implementação simples e adequada ao nível júnior.
 
