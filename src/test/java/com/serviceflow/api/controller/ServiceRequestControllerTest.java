@@ -338,4 +338,201 @@ class ServiceRequestControllerTest {
                         containsString("description:")
                 ));
     }
+
+    @Test
+    void shouldReturnConflictWhenTransitioningFromPendingToCompleted()
+            throws Exception {
+
+        ServiceRequest request = new ServiceRequest();
+
+        request.setTitle("Teste de transição inválida");
+        request.setDescription("Solicitação em PENDING");
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(
+                        patch(
+                                "/api/service-requests/"
+                                        + savedRequest.getId()
+                                        + "/status"
+                        )
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "status": "COMPLETED"
+                                        }
+                                        """)
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.message").value(
+                        containsString("Transição de status inválida")
+                ));
+    }
+
+    @Test
+    void shouldReturnConflictWhenTransitioningFromInProgressToPending()
+            throws Exception {
+
+        ServiceRequest request = new ServiceRequest();
+
+        request.setTitle("Teste de retorno de status");
+        request.setDescription("Solicitação em andamento");
+        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.IN_PROGRESS);
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(
+                        patch(
+                                "/api/service-requests/"
+                                        + savedRequest.getId()
+                                        + "/status"
+                        )
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "status": "PENDING"
+                                        }
+                                        """)
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.message").value(
+                        containsString("Transição de status inválida")
+                ));
+    }
+
+    @Test
+    void shouldReturnConflictWhenChangingCompletedServiceRequestStatus()
+            throws Exception {
+
+        ServiceRequest request = new ServiceRequest();
+
+        request.setTitle("Solicitação concluída");
+        request.setDescription("Solicitação finalizada");
+        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.COMPLETED);
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(
+                        patch(
+                                "/api/service-requests/"
+                                        + savedRequest.getId()
+                                        + "/status"
+                        )
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "status": "IN_PROGRESS"
+                                        }
+                                        """)
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.message").value(
+                        containsString("solicitação finalizada")
+                ));
+    }
+
+    @Test
+    void shouldReturnConflictWhenChangingCancelledServiceRequestStatus()
+            throws Exception {
+
+        ServiceRequest request = new ServiceRequest();
+
+        request.setTitle("Solicitação cancelada");
+        request.setDescription("Solicitação cancelada");
+        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.CANCELLED);
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(
+                        patch(
+                                "/api/service-requests/"
+                                        + savedRequest.getId()
+                                        + "/status"
+                        )
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "status": "IN_PROGRESS"
+                                        }
+                                        """)
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.message").value(
+                        containsString("solicitação finalizada")
+                ));
+    }
+
+    @Test
+    void shouldReturnConflictWhenUpdatingCompletedServiceRequest()
+            throws Exception {
+
+        ServiceRequest request = new ServiceRequest();
+
+        request.setTitle("Solicitação concluída");
+        request.setDescription("Solicitação finalizada");
+        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.COMPLETED);
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(
+                        put("/api/service-requests/" + savedRequest.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "title": "Tentativa de alteração",
+                                            "description": "Não deveria ser alterada"
+                                        }
+                                        """)
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.message").value(
+                        containsString("solicitação finalizada")
+                ));
+    }
+
+    @Test
+    void shouldReturnConflictWhenUpdatingCancelledServiceRequest()
+            throws Exception {
+
+        ServiceRequest request = new ServiceRequest();
+
+        request.setTitle("Solicitação cancelada");
+        request.setDescription("Solicitação cancelada");
+        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.CANCELLED);
+
+        ServiceRequest savedRequest = repository.save(request);
+
+        assertNotNull(savedRequest.getId());
+
+        mockMvc.perform(
+                        put("/api/service-requests/" + savedRequest.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "title": "Tentativa de alteração",
+                                            "description": "Não deveria ser alterada"
+                                        }
+                                        """)
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.message").value(
+                        containsString("solicitação finalizada")
+                ));
+    }
 }
