@@ -28,7 +28,9 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 11 - Mapeamento entre DTOs e entidades](#aula-11---mapeamento-entre-dtos-e-entidades)
     - [Aula 12 - Organização e melhoria da arquitetura da API](#aula-12---organização-e-melhoria-da-arquitetura-da-api)
     - [Aula 13 - Alteração de status das solicitações](#aula-13---alteração-de-status-das-solicitações)
+    - [Aula 14 - Regras de negócio para solicitações](#aula-14---regras-de-negócio-para-solicitações)
 - [Próxima aula](#próxima-aula)
+    - [Aula 15 - Documentação da API](#aula-15---documentação-da-api)
 - [Resumo](#resumo)
 - [Autor](#autor)
 
@@ -94,16 +96,17 @@ serviceflow-api/
 │   │   │   │   │   ├── ServiceRequest.java
 │   │   │   │   │   └── ServiceRequestStatus.java
 │   │   │   │   ├── exception/ 
-│   │   │   │   │ ├── ErrorResponse.java
-│   │   │   │   │ ├── GlobalExceptionHandler.java 
-│   │   │   │   │ └── ServiceRequestNotFoundException.java
+│   │   │   │   │   ├── ErrorResponse.java
+│   │   │   │   │   ├── GlobalExceptionHandler.java 
+│   │   │   │   │   ├── InvalidServiceRequestStateException.java
+│   │   │   │   │   └── ServiceRequestNotFoundException.java
 │   │   │   │   ├── repository/
 │   │   │   │   │   └── ServiceRequestRepository.java
 │   │   │   │   ├── service/
 │   │   │   │   │   └── ServiceRequestService.java
 │   │   │   │   └── ServiceflowApiApplication.java
 │   │   └── resources/
-│   │       └── application.properties
+│   │   │   └── application.properties
 │   └── test/
 │   │   └── java/
 │   │   │   └── com/serviceflow/api/
@@ -446,22 +449,39 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Execução da suíte completa de testes com sucesso: **20 testes, 0 falhas, 0 erros**
 - Confirmação do `BUILD SUCCESS`
 
-## Próxima aula
-
 ### Aula 14 - Regras de negócio para solicitações
 
-- Definição das regras de transição entre os status das solicitações
-- Validação das transições permitidas entre `PENDING`, `IN_PROGRESS`, `COMPLETED` e `CANCELLED`
-- Impedimento de transições inválidas de status
-- Impedimento de alteração de solicitações que estejam em status final
-- Centralização das regras de negócio na camada Service
-- Criação de exceção específica para regras de negócio inválidas
-- Tratamento global das exceções de regra de negócio
-- Definição das respostas HTTP para violações das regras
-- Criação de testes unitários para as transições permitidas
-- Criação de testes unitários para as transições não permitidas
-- Criação de testes de Controller para validação das regras de negócio
-- Execução da suíte completa de testes após a implementação
+- Definição das regras de transição entre os status das solicitações.
+- Validação das transições permitidas entre `PENDING`, `IN_PROGRESS`, `COMPLETED` e `CANCELLED`.
+- Impedimento de transições inválidas de status.
+- Definição de `COMPLETED` e `CANCELLED` como estados finais.
+- Impedimento de alteração de solicitações que estejam em status final.
+- Centralização das regras de negócio na camada Service.
+- Criação da exceção `InvalidServiceRequestStateException`.
+- Tratamento global das exceções de regra de negócio.
+- Retorno HTTP `409 Conflict` para violações das regras de negócio.
+- Criação de testes unitários para as transições permitidas.
+- Criação de testes unitários para as transições não permitidas.
+- Criação de testes para impedir alterações em solicitações finalizadas.
+- Criação de testes de Controller para validação das regras de negócio.
+- Execução da suíte completa de testes.
+- Resultado final: **39 testes executados, 0 falhas e 0 erros**.
+
+## Próxima aula
+
+### Aula 15 - Documentação da API
+
+- Introdução à documentação de APIs REST.
+- Diferença entre OpenAPI, Swagger, Postman e Insomnia.
+- Adição da documentação OpenAPI ao projeto.
+- Configuração do Swagger UI.
+- Documentação dos endpoints de solicitações.
+- Documentação dos parâmetros, requisições e respostas HTTP.
+- Documentação dos códigos de erro utilizados pela API.
+- Organização da documentação por operações da API.
+- Validação dos endpoints através do Swagger UI.
+- Execução da suíte completa de testes após a configuração.
+- Atualização do README com o acesso à documentação da API.
 
 ## Resumo
 ✓ Aula 1 → Configuração inicial e integração com PostgreSQL<br>
@@ -477,7 +497,7 @@ O projeto está sendo construído de forma incremental, começando pela configur
 ✓ Aula 11 → Mapeamento entre DTOs e entidades<br>
 ✓ Aula 12 → Organização e melhoria da arquitetura da API<br>
 ✓ Aula 13 → Alteração de status das solicitações<br>
-- [ ] Aula 14 → Regras de negócio para solicitações
+✓ Aula 14 → Regras de negócio para solicitações<br>
 - [ ] Aula 15 → Paginação e ordenação
 - [ ] Aula 16 → Documentação da API com Swagger/OpenAPI
 - [ ] Aula 17 → Testes adicionais e melhoria da cobertura
