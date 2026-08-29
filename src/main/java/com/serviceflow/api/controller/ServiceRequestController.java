@@ -17,10 +17,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/service-requests")
@@ -66,22 +68,59 @@ public class ServiceRequestController {
 
     @Operation(
             summary = "Listar solicitações de serviço",
-            description = "Retorna todas as solicitações de serviço cadastradas."
+            description = "Retorna as solicitações de serviço de forma paginada e ordenada."
     )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
                     description = "Solicitações retornadas com sucesso",
                     content = @Content(
-                            schema = @Schema(
-                                    implementation = ServiceRequestResponse.class
-                            )
+                            schema = @Schema(implementation = ServiceRequestResponse.class)
                     )
             )
     })
     @GetMapping
-    public List<ServiceRequestResponse> findAll() {
-        return service.findAll();
+    public Page<ServiceRequestResponse> findAll(
+            @Parameter(
+                    name = "page",
+                    description = "Número da página. A primeira página é 0.",
+                    example = "0"
+            )
+            @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(
+                    name = "size",
+                    description = "Quantidade de solicitações por página.",
+                    example = "10"
+            )
+            @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(
+                    name = "sort",
+                    description = "Campo utilizado para ordenação e direção. Exemplo: createdAt,desc",
+                    example = "createdAt,desc"
+            )
+            @RequestParam(
+                    defaultValue = "createdAt,desc"
+            ) String sort) {
+
+        String[] sortParameters = sort.split(",");
+
+        String sortField = sortParameters[0];
+
+        Sort.Direction sortDirection = Sort.Direction.DESC;
+
+        if (sortParameters.length > 1) {
+            sortDirection = Sort.Direction.fromString(sortParameters[1]);
+        }
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(sortDirection, sortField)
+        );
+
+        return service.findAll(pageable);
     }
 
     @Operation(

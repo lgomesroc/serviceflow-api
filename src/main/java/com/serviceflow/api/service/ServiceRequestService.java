@@ -8,9 +8,9 @@ import com.serviceflow.api.entity.ServiceRequestStatus;
 import com.serviceflow.api.exception.InvalidServiceRequestStateException;
 import com.serviceflow.api.exception.ServiceRequestNotFoundException;
 import com.serviceflow.api.repository.ServiceRequestRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ServiceRequestService {
@@ -29,11 +29,9 @@ public class ServiceRequestService {
         return toResponse(savedRequest);
     }
 
-    public List<ServiceRequestResponse> findAll() {
-        return repository.findAll()
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    public Page<ServiceRequestResponse> findAll(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(this::toResponse);
     }
 
     public ServiceRequestResponse findById(Long id) {

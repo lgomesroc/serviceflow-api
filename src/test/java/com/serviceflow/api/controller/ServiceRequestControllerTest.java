@@ -1,6 +1,7 @@
 package com.serviceflow.api.controller;
 
 import com.serviceflow.api.entity.ServiceRequest;
+import com.serviceflow.api.entity.ServiceRequestStatus;
 import com.serviceflow.api.repository.ServiceRequestRepository;
 
 import org.junit.jupiter.api.Test;
@@ -8,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
-
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,12 +40,114 @@ class ServiceRequestControllerTest {
     void shouldReturnOkWhenGettingServiceRequests() throws Exception {
         mockMvc.perform(get("/api/service-requests"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].id").exists())
-                .andExpect(jsonPath("$[0].title").exists())
-                .andExpect(jsonPath("$[0].description").exists())
-                .andExpect(jsonPath("$[0].status").exists())
-                .andExpect(jsonPath("$[0].createdAt").exists());
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].id").exists())
+                .andExpect(jsonPath("$.content[0].title").exists())
+                .andExpect(jsonPath("$.content[0].description").exists())
+                .andExpect(jsonPath("$.content[0].status").exists())
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
+                .andExpect(jsonPath("$.pageable").exists())
+                .andExpect(jsonPath("$.totalElements").exists())
+                .andExpect(jsonPath("$.totalPages").exists());
+    }
+
+    @Test
+    void shouldReturnFirstPageWithRequestedSize() throws Exception {
+        mockMvc.perform(
+                        get("/api/service-requests")
+                                .param("page", "0")
+                                .param("size", "5")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(5))
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(5))
+                .andExpect(jsonPath("$.numberOfElements").value(5));
+    }
+
+    @Test
+    void shouldReturnRequestedPage() throws Exception {
+        mockMvc.perform(
+                        get("/api/service-requests")
+                                .param("page", "1")
+                                .param("size", "5")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.number").value(1))
+                .andExpect(jsonPath("$.size").value(5))
+                .andExpect(jsonPath("$.numberOfElements").value(5));
+    }
+
+    @Test
+    void shouldReturnServiceRequestsOrderedAscendingById()
+            throws Exception {
+
+        Page<ServiceRequest> expectedPage = repository.findAll(
+                PageRequest.of(
+                        0,
+                        2,
+                        Sort.by(Sort.Direction.ASC, "id")
+                )
+        );
+
+        Long firstExpectedId = expectedPage.getContent()
+                .get(0)
+                .getId();
+
+        Long secondExpectedId = expectedPage.getContent()
+                .get(1)
+                .getId();
+
+        mockMvc.perform(
+                        get("/api/service-requests")
+                                .param("page", "0")
+                                .param("size", "2")
+                                .param("sort", "id,asc")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id")
+                        .value(firstExpectedId))
+                .andExpect(jsonPath("$.content[1].id")
+                        .value(secondExpectedId));
+    }
+
+    @Test
+    void shouldReturnServiceRequestsOrderedDescendingById()
+            throws Exception {
+
+        Page<ServiceRequest> expectedPage = repository.findAll(
+                PageRequest.of(
+                        0,
+                        2,
+                        Sort.by(Sort.Direction.DESC, "id")
+                )
+        );
+
+        Long firstExpectedId = expectedPage.getContent()
+                .get(0)
+                .getId();
+
+        Long secondExpectedId = expectedPage.getContent()
+                .get(1)
+                .getId();
+
+        mockMvc.perform(
+                        get("/api/service-requests")
+                                .param("page", "0")
+                                .param("size", "2")
+                                .param("sort", "id,desc")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id")
+                        .value(firstExpectedId))
+                .andExpect(jsonPath("$.content[1].id")
+                        .value(secondExpectedId));
     }
 
     @Test
@@ -52,7 +155,9 @@ class ServiceRequestControllerTest {
         ServiceRequest request = new ServiceRequest();
 
         request.setTitle("Teste de consulta por ID");
-        request.setDescription("Solicitação criada pelo teste de integração");
+        request.setDescription(
+                "Solicitação criada pelo teste de integração"
+        );
 
         ServiceRequest savedRequest = repository.save(request);
 
@@ -380,7 +485,7 @@ class ServiceRequestControllerTest {
 
         request.setTitle("Teste de retorno de status");
         request.setDescription("Solicitação em andamento");
-        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.IN_PROGRESS);
+        request.setStatus(ServiceRequestStatus.IN_PROGRESS);
 
         ServiceRequest savedRequest = repository.save(request);
 
@@ -414,7 +519,7 @@ class ServiceRequestControllerTest {
 
         request.setTitle("Solicitação concluída");
         request.setDescription("Solicitação finalizada");
-        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.COMPLETED);
+        request.setStatus(ServiceRequestStatus.COMPLETED);
 
         ServiceRequest savedRequest = repository.save(request);
 
@@ -448,7 +553,7 @@ class ServiceRequestControllerTest {
 
         request.setTitle("Solicitação cancelada");
         request.setDescription("Solicitação cancelada");
-        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.CANCELLED);
+        request.setStatus(ServiceRequestStatus.CANCELLED);
 
         ServiceRequest savedRequest = repository.save(request);
 
@@ -482,7 +587,7 @@ class ServiceRequestControllerTest {
 
         request.setTitle("Solicitação concluída");
         request.setDescription("Solicitação finalizada");
-        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.COMPLETED);
+        request.setStatus(ServiceRequestStatus.COMPLETED);
 
         ServiceRequest savedRequest = repository.save(request);
 
@@ -513,7 +618,7 @@ class ServiceRequestControllerTest {
 
         request.setTitle("Solicitação cancelada");
         request.setDescription("Solicitação cancelada");
-        request.setStatus(com.serviceflow.api.entity.ServiceRequestStatus.CANCELLED);
+        request.setStatus(ServiceRequestStatus.CANCELLED);
 
         ServiceRequest savedRequest = repository.save(request);
 
