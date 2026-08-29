@@ -8,12 +8,17 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 
 - [Tecnologias](#tecnologias)
 - [Objetivo](#objetivo)
-- [Funcionalidades planejadas](#funcionalidades-planejadas)
+- [Funcionalidades](#funcionalidades)
+  - [Implementadas](#implementadas)
+  - [Planejadas](#planejadas)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Banco de dados](#banco-de-dados)
 - [Executando o projeto](#executando-o-projeto)
+  - [PostgreSQL](#postgresql)
+  - [Build](#build)
 - [Documentação da API](#documentação-da-api)
-- [Build](#build)
+  - [Requisitos](#requisitos)
+  - [Paginação e ordenação](#paginação-e-ordenação)
 - [Status do projeto](#status-do-projeto)
 - [Progresso do desenvolvimento](#progresso-do-desenvolvimento)
     - [Aula 1 - Configuração inicial e integração com PostgreSQL](#aula-1---configuração-inicial-e-integração-com-postgresql)
@@ -31,7 +36,12 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 13 - Alteração de status das solicitações](#aula-13---alteração-de-status-das-solicitações)
     - [Aula 14 - Regras de negócio para solicitações](#aula-14---regras-de-negócio-para-solicitações)
     - [Aula 15 - Documentação da API](#aula-15---documentação-da-api)
-- [Próxima aula](#próxima-aula)
+    - [Aula 16 - Paginação e ordenação](#aula-16---paginação-e-ordenação)
+- [Próximas aulas](#próximas-aulas)
+    - [Aula 17 - Testes adicionais e melhoria da cobertura](#aula-17---testes-adicionais-e-melhoria-da-cobertura)
+    - [Aula 18 - Perfis e configurações de ambiente](#aula-18---perfis-e-configurações-de-ambiente)
+    - [Aula 19 - Dockerização da aplicação](#aula-19---dockerização-da-aplicação)
+    - [Aula 20 - Docker Compose e ambiente da aplicação](#aula-20---docker-compose-e-ambiente-da-aplicação)
 - [Resumo](#resumo)
 - [Autor](#autor)
 
@@ -165,7 +175,7 @@ git clone https://github.com/lgomesroc/serviceflow-api.git
 cd serviceflow-api
 ```
 
-## PostgreSQL
+### PostgreSQL
 
 O projeto utiliza um contêiner PostgreSQL executado através do Docker.
 
@@ -216,7 +226,7 @@ Execute o projeto:
 ./mvnw spring-boot:run
 ```
 
-## Build
+### Build
 
 Para gerar o arquivo JAR:
 
@@ -274,11 +284,23 @@ http://localhost:8080/swagger-ui/index.html
 
 A documentação disponibiliza os endpoints de solicitações de serviço e os principais códigos de resposta utilizados pela API, incluindo `200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found` e `409 Conflict`.
 
+### Paginação e ordenação
+
+A documentação do endpoint `GET /api/service-requests` também contempla os parâmetros de paginação e ordenação:
+
+- `page` — número da página, iniciando em `0`.
+- `size` — quantidade de solicitações retornadas por página.
+- `sort` — campo e direção utilizados para ordenação, por exemplo `createdAt,desc`.
+
+A paginação e a ordenação foram implementadas utilizando os recursos do Spring Data e podem ser testadas diretamente através do Swagger UI.
+
 ## Status do projeto
 
 Em desenvolvimento.
 
-O projeto está sendo construído de forma incremental, começando pela configuração da aplicação, integração com PostgreSQL e estrutura inicial da API.
+O projeto está sendo desenvolvido de forma incremental, evoluindo de uma API REST básica para uma aplicação com persistência em PostgreSQL, validação de dados, tratamento de exceções, regras de negócio, testes automatizados, documentação com OpenAPI/Swagger, paginação e ordenação dos resultados.
+
+Até o momento, foram concluídas **16 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
 
 ## Progresso do desenvolvimento
 
@@ -543,20 +565,28 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Confirmação do `BUILD SUCCESS`.
 - Documentação das formas de acesso ao Swagger UI e ao documento OpenAPI.
 
-## Próximas aulas
-
 ### Aula 16 - Paginação e ordenação
 
-- Introdução à paginação de resultados.
-- Implementação de paginação no `GET /api/service-requests`.
-- Utilização dos recursos de paginação do Spring Data.
-- Definição do tamanho da página.
-- Definição da página solicitada.
-- Implementação de ordenação dos chamados.
-- Validação do comportamento com diferentes páginas e critérios de ordenação.
-- Atualização dos testes do endpoint.
-- Validação da resposta paginada através do Swagger UI.
-- Execução da suíte completa de testes.
+- Introdução ao conceito de paginação de resultados em APIs REST.
+- Implementação de paginação no endpoint `GET /api/service-requests`.
+- Utilização de `Page`, `Pageable` e `PageRequest` do Spring Data.
+- Definição do parâmetro `page` para selecionar a página dos resultados.
+- Definição do parâmetro `size` para controlar a quantidade de registros retornados.
+- Implementação de ordenação através do parâmetro `sort`.
+- Definição da ordenação padrão por `createdAt` em ordem decrescente.
+- Permissão para informar diferentes campos e direções de ordenação através do Swagger UI.
+- Retorno das informações de paginação através do objeto `Page`.
+- Validação do número da página, quantidade de elementos e total de registros retornados.
+- Atualização da documentação do endpoint no Swagger UI.
+- Atualização dos testes do Controller para contemplar o comportamento paginado.
+- Validação de diferentes páginas através do Swagger UI.
+- Validação da ordenação por `createdAt,desc` através do Swagger UI.
+- Validação de que páginas diferentes retornam conjuntos diferentes de solicitações.
+- Validação de que o tamanho da página é respeitado.
+- Execução da suíte completa de testes com sucesso: **43 testes, 0 falhas e 0 erros**.
+- Confirmação do `BUILD SUCCESS`.
+
+## Próximas aulas
 
 ### Aula 17 - Testes adicionais e melhoria da cobertura
 
@@ -623,7 +653,7 @@ O projeto está sendo construído de forma incremental, começando pela configur
 ✓ Aula 14 → Regras de negócio para solicitações<br>
 ✓ Aula 14 → Regras de negócio para solicitações<br>
 ✓ Aula 15 → Documentação da API com Swagger/OpenAPI<br>
-- [ ] Aula 16 → Paginação e ordenação
+✓ Aula 16 → Paginação e ordenação<br>
 - [ ] Aula 17 → Testes adicionais e melhoria da cobertura
 - [ ] Aula 18 → Segurança e autenticação da API
 - [ ] Aula 19 → Perfis e configurações de ambiente
