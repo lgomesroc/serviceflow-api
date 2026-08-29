@@ -12,6 +12,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Banco de dados](#banco-de-dados)
 - [Executando o projeto](#executando-o-projeto)
+- [Documentação da API](#documentação-da-api)
 - [Build](#build)
 - [Status do projeto](#status-do-projeto)
 - [Progresso do desenvolvimento](#progresso-do-desenvolvimento)
@@ -29,8 +30,8 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 12 - Organização e melhoria da arquitetura da API](#aula-12---organização-e-melhoria-da-arquitetura-da-api)
     - [Aula 13 - Alteração de status das solicitações](#aula-13---alteração-de-status-das-solicitações)
     - [Aula 14 - Regras de negócio para solicitações](#aula-14---regras-de-negócio-para-solicitações)
-- [Próxima aula](#próxima-aula)
     - [Aula 15 - Documentação da API](#aula-15---documentação-da-api)
+- [Próxima aula](#próxima-aula)
 - [Resumo](#resumo)
 - [Autor](#autor)
 
@@ -46,6 +47,8 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 * **Docker** — utilizado para executar o PostgreSQL em ambiente local de forma isolada e reproduzível, sem necessidade de instalar o banco diretamente no sistema operacional.
 * **JUnit** — utilizado para criação e execução dos testes automatizados.
 * **Mockito** — utilizado nos testes unitários para criar mocks das dependências e permitir o isolamento da camada Service.
+* **OpenAPI** — utilizado para definir e descrever o contrato da API REST.
+* **Swagger UI** — utilizado para disponibilizar uma interface web para consulta e teste dos endpoints da API.
 
 > As tecnologias foram escolhidas considerando o objetivo do projeto: construir uma API REST com uma stack comum no desenvolvimento backend corporativo, mantendo a implementação simples e adequada ao nível júnior.
 
@@ -59,22 +62,23 @@ O projeto será desenvolvido de forma incremental, priorizando uma implementaç�
 
 ### Implementadas
 
-* Cadastro de usuários
 * Cadastro de chamados
 * Consulta de chamados
 * Atualização de chamados
 * Alteração de status
-* Associação de chamados a usuários
 * Validação de dados
 * Persistência com PostgreSQL
 * Tratamento de erros da API
 * Testes automatizados
+* Documentação da API com OpenAPI e Swagger
 
 ### Planejadas
 
-- [ ] Cadastro de usuários
-- [ ] Alteração de status
-- [ ] Associação de chamados a usuários
+- [ ] Paginação e ordenação
+- [ ] Configurações por ambiente
+- [ ] Dockerização da aplicação
+- [ ] Docker Compose
+- [ ] Logs e observabilidade básica
 
 ## Estrutura do projeto
 
@@ -86,6 +90,8 @@ serviceflow-api/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── com/serviceflow/api/
+│   │   │   │   ├── config/
+│   │   │   │   │   └── OpenApiConfig.java
 │   │   │   │   ├── controller/
 │   │   │   │   │   └── ServiceRequestController.java
 │   │   │   │   ├── dto/
@@ -223,6 +229,50 @@ O artefato será gerado em:
 ```text
 target/serviceflow-api-0.0.1-SNAPSHOT.jar
 ```
+
+## Documentação da API
+
+A API possui documentação baseada em **OpenAPI 3.1**, disponibilizada através do Swagger UI.
+
+Com a aplicação em execução, a documentação pode ser acessada através de:
+
+**Swagger UI:**
+
+http://localhost:8080/swagger-ui/index.html
+
+**OpenAPI JSON:**
+
+http://localhost:8080/v3/api-docs
+
+O Swagger UI permite visualizar e testar os endpoints da API diretamente pelo navegador, incluindo parâmetros, dados de requisição e respostas HTTP.
+
+### Requisitos
+
+Para utilizar a API localmente, é necessário que:
+
+- A aplicação Spring Boot esteja em execução.
+- O contêiner PostgreSQL `serviceflow-postgres` esteja em execução.
+- O PostgreSQL esteja disponível na porta `5432`.
+
+Verifique o contêiner com:
+
+```bash
+docker ps
+```
+
+Caso o contêiner esteja parado:
+
+```bash
+docker start serviceflow-postgres
+```
+
+Após iniciar a aplicação, acesse:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+A documentação disponibiliza os endpoints de solicitações de serviço e os principais códigos de resposta utilizados pela API, incluindo `200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found` e `409 Conflict`.
 
 ## Status do projeto
 
@@ -467,21 +517,94 @@ O projeto está sendo construído de forma incremental, começando pela configur
 - Execução da suíte completa de testes.
 - Resultado final: **39 testes executados, 0 falhas e 0 erros**.
 
-## Próxima aula
-
 ### Aula 15 - Documentação da API
 
 - Introdução à documentação de APIs REST.
 - Diferença entre OpenAPI, Swagger, Postman e Insomnia.
 - Adição da documentação OpenAPI ao projeto.
 - Configuração do Swagger UI.
-- Documentação dos endpoints de solicitações.
-- Documentação dos parâmetros, requisições e respostas HTTP.
-- Documentação dos códigos de erro utilizados pela API.
-- Organização da documentação por operações da API.
-- Validação dos endpoints através do Swagger UI.
-- Execução da suíte completa de testes após a configuração.
-- Atualização do README com o acesso à documentação da API.
+- Criação da classe `OpenApiConfig`.
+- Organização da configuração do OpenAPI na pasta `config`.
+- Documentação dos endpoints de solicitações de serviço.
+- Documentação dos parâmetros das requisições.
+- Documentação dos corpos de requisição e resposta.
+- Documentação dos principais códigos de resposta HTTP.
+- Inclusão do schema `ErrorResponse` na documentação.
+- Validação da documentação através do Swagger UI.
+- Teste do `POST /api/service-requests` através do Swagger UI.
+- Teste do `GET /api/service-requests` através do Swagger UI.
+- Teste do `GET /api/service-requests/{id}` com recurso existente.
+- Teste do `GET /api/service-requests/{id}` com recurso inexistente, validando `404 Not Found`.
+- Teste do `PUT /api/service-requests/{id}`.
+- Teste do `PATCH /api/service-requests/{id}/status`.
+- Teste de violação de regra de negócio, validando `409 Conflict`.
+- Validação da resposta `ErrorResponse` para erros da API.
+- Execução da suíte completa de testes com sucesso: **39 testes, 0 falhas, 0 erros**.
+- Confirmação do `BUILD SUCCESS`.
+- Documentação das formas de acesso ao Swagger UI e ao documento OpenAPI.
+
+## Próximas aulas
+
+### Aula 16 - Paginação e ordenação
+
+- Introdução à paginação de resultados.
+- Implementação de paginação no `GET /api/service-requests`.
+- Utilização dos recursos de paginação do Spring Data.
+- Definição do tamanho da página.
+- Definição da página solicitada.
+- Implementação de ordenação dos chamados.
+- Validação do comportamento com diferentes páginas e critérios de ordenação.
+- Atualização dos testes do endpoint.
+- Validação da resposta paginada através do Swagger UI.
+- Execução da suíte completa de testes.
+
+### Aula 17 - Testes adicionais e melhoria da cobertura
+
+- Revisão da suíte atual de testes.
+- Identificação de cenários ainda não testados.
+- Criação de testes para casos de borda.
+- Ampliação dos testes das regras de negócio.
+- Ampliação dos testes de validação.
+- Ampliação dos testes dos endpoints.
+- Verificação dos cenários de erro HTTP.
+- Revisão dos testes existentes para evitar duplicação.
+- Execução da suíte completa de testes.
+- Análise da cobertura dos principais fluxos da aplicação.
+
+### Aula 18 - Perfis e configurações de ambiente
+
+- Introdução aos perfis de configuração do Spring Boot.
+- Separação das configurações de desenvolvimento e teste.
+- Criação de configurações específicas por ambiente.
+- Revisão das configurações de acesso ao PostgreSQL.
+- Utilização de variáveis de ambiente para configurações sensíveis.
+- Validação da aplicação utilizando diferentes configurações.
+- Execução dos testes após a alteração das configurações.
+
+### Aula 19 - Dockerização da aplicação
+
+- Introdução à execução da aplicação Spring Boot em Docker.
+- Criação do `Dockerfile`.
+- Utilização do JAR da aplicação na construção da imagem Docker.
+- Criação da imagem Docker da API.
+- Execução da API em um contêiner.
+- Configuração da comunicação entre a API e o PostgreSQL.
+- Validação dos endpoints com a aplicação executando em Docker.
+- Execução dos testes e validação do funcionamento da aplicação.
+
+### Aula 20 - Docker Compose e ambiente da aplicação
+
+- Introdução ao Docker Compose.
+- Criação do `docker-compose.yml`.
+- Configuração do serviço da API.
+- Configuração do serviço PostgreSQL.
+- Configuração da comunicação entre os contêineres.
+- Configuração das variáveis de ambiente.
+- Inicialização da aplicação e do banco através do Docker Compose.
+- Validação da API através do Swagger UI.
+- Validação da persistência dos dados no PostgreSQL.
+- Execução da suíte completa de testes.
+- Documentação dos comandos necessários para iniciar o ambiente.
 
 ## Resumo
 ✓ Aula 1 → Configuração inicial e integração com PostgreSQL<br>
@@ -498,8 +621,9 @@ O projeto está sendo construído de forma incremental, começando pela configur
 ✓ Aula 12 → Organização e melhoria da arquitetura da API<br>
 ✓ Aula 13 → Alteração de status das solicitações<br>
 ✓ Aula 14 → Regras de negócio para solicitações<br>
-- [ ] Aula 15 → Paginação e ordenação
-- [ ] Aula 16 → Documentação da API com Swagger/OpenAPI
+✓ Aula 14 → Regras de negócio para solicitações<br>
+✓ Aula 15 → Documentação da API com Swagger/OpenAPI<br>
+- [ ] Aula 16 → Paginação e ordenação
 - [ ] Aula 17 → Testes adicionais e melhoria da cobertura
 - [ ] Aula 18 → Segurança e autenticação da API
 - [ ] Aula 19 → Perfis e configurações de ambiente
