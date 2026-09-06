@@ -9,21 +9,28 @@ import com.serviceflow.api.exception.InvalidServiceRequestStateException;
 import com.serviceflow.api.exception.ServiceRequestNotFoundException;
 import com.serviceflow.api.repository.ServiceRequestRepository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class ServiceRequestServiceTest {
@@ -31,51 +38,60 @@ class ServiceRequestServiceTest {
     @Mock
     private ServiceRequestRepository repository;
 
-    @InjectMocks
     private ServiceRequestService service;
+
+    @BeforeEach
+    void setUp() {
+        service = new ServiceRequestService(repository);
+    }
 
     @Test
     void shouldCreateServiceRequest() {
         ServiceRequestRequest request = new ServiceRequestRequest();
 
         request.setTitle("Notebook não liga");
-        request.setDescription("Equipamento não apresenta sinais de energia");
+        request.setDescription(
+                "Equipamento não apresenta sinais de energia"
+        );
 
-        ServiceRequest savedRequest = new ServiceRequest();
+        ServiceRequest savedRequest =
+                createServiceRequest(ServiceRequestStatus.PENDING);
 
-        savedRequest.setTitle(request.getTitle());
-        savedRequest.setDescription(request.getDescription());
-
-        when(repository.save(org.mockito.ArgumentMatchers.any(ServiceRequest.class)))
+        when(repository.save(any(ServiceRequest.class)))
                 .thenReturn(savedRequest);
 
-        ServiceRequestResponse result = service.create(request);
+        ServiceRequestResponse response =
+                service.create(request);
 
-        assertEquals("Notebook não liga", result.getTitle());
+        assertEquals(
+                "Notebook não liga",
+                response.getTitle()
+        );
 
         assertEquals(
                 "Equipamento não apresenta sinais de energia",
-                result.getDescription()
+                response.getDescription()
         );
 
-        verify(repository).save(
-                org.mockito.ArgumentMatchers.any(ServiceRequest.class)
+        assertEquals(
+                ServiceRequestStatus.PENDING,
+                response.getStatus()
         );
+
+        verify(repository).save(any(ServiceRequest.class));
     }
 
     @Test
     void shouldUpdateServiceRequest() {
-        ServiceRequest existingRequest = new ServiceRequest();
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.PENDING);
 
-        existingRequest.setTitle("Notebook não liga");
-        existingRequest.setDescription("Equipamento não apresenta sinais de energia");
-        existingRequest.setStatus(ServiceRequestStatus.PENDING);
+        ServiceRequestRequest updatedRequest =
+                new ServiceRequestRequest();
 
-        ServiceRequestRequest updatedRequest = new ServiceRequestRequest();
-
-        updatedRequest.setTitle("Notebook não liga - atualizado");
+        updatedRequest.setTitle("Notebook atualizado");
         updatedRequest.setDescription(
-                "Equipamento continua sem apresentar sinais de energia"
+                "Descrição atualizada"
         );
 
         when(repository.findById(1L))
@@ -84,16 +100,17 @@ class ServiceRequestServiceTest {
         when(repository.save(existingRequest))
                 .thenReturn(existingRequest);
 
-        ServiceRequestResponse result = service.update(1L, updatedRequest);
+        ServiceRequestResponse response =
+                service.update(1L, updatedRequest);
 
         assertEquals(
-                "Notebook não liga - atualizado",
-                result.getTitle()
+                "Notebook atualizado",
+                response.getTitle()
         );
 
         assertEquals(
-                "Equipamento continua sem apresentar sinais de energia",
-                result.getDescription()
+                "Descrição atualizada",
+                response.getDescription()
         );
 
         verify(repository).findById(1L);
@@ -102,16 +119,11 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldUpdateServiceRequestStatus() {
-        ServiceRequest existingRequest = new ServiceRequest();
-
-        existingRequest.setTitle("Notebook não liga");
-        existingRequest.setDescription("Equipamento não apresenta sinais de energia");
-        existingRequest.setStatus(ServiceRequestStatus.PENDING);
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.PENDING);
 
         ServiceRequestStatusRequest statusRequest =
-                new ServiceRequestStatusRequest();
-
-        statusRequest.setStatus(ServiceRequestStatus.IN_PROGRESS);
+                createStatusRequest(ServiceRequestStatus.IN_PROGRESS);
 
         when(repository.findById(1L))
                 .thenReturn(Optional.of(existingRequest));
@@ -119,12 +131,12 @@ class ServiceRequestServiceTest {
         when(repository.save(existingRequest))
                 .thenReturn(existingRequest);
 
-        ServiceRequestResponse result =
+        ServiceRequestResponse response =
                 service.updateStatus(1L, statusRequest);
 
         assertEquals(
                 ServiceRequestStatus.IN_PROGRESS,
-                result.getStatus()
+                response.getStatus()
         );
 
         verify(repository).findById(1L);
@@ -133,9 +145,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldAllowTransitionFromPendingToCancelled() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.PENDING
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.PENDING);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.CANCELLED);
@@ -159,9 +170,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldAllowTransitionFromInProgressToCompleted() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.IN_PROGRESS
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.IN_PROGRESS);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.COMPLETED);
@@ -185,9 +195,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldAllowTransitionFromInProgressToCancelled() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.IN_PROGRESS
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.IN_PROGRESS);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.CANCELLED);
@@ -211,9 +220,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectTransitionFromPendingToCompleted() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.PENDING
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.PENDING);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.COMPLETED);
@@ -232,9 +240,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectTransitionFromInProgressToPending() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.IN_PROGRESS
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.IN_PROGRESS);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.PENDING);
@@ -253,9 +260,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectTransitionFromCompletedToPending() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.COMPLETED
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.COMPLETED);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.PENDING);
@@ -274,9 +280,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectTransitionFromCompletedToInProgress() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.COMPLETED
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.COMPLETED);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.IN_PROGRESS);
@@ -295,9 +300,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectTransitionFromCompletedToCancelled() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.COMPLETED
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.COMPLETED);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.CANCELLED);
@@ -316,9 +320,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectTransitionFromCancelledToPending() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.CANCELLED
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.CANCELLED);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.PENDING);
@@ -337,9 +340,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectTransitionFromCancelledToInProgress() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.CANCELLED
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.CANCELLED);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.IN_PROGRESS);
@@ -358,9 +360,8 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectTransitionFromCancelledToCompleted() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.CANCELLED
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.CANCELLED);
 
         ServiceRequestStatusRequest statusRequest =
                 createStatusRequest(ServiceRequestStatus.COMPLETED);
@@ -379,11 +380,11 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectUpdateOfCompletedServiceRequest() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.COMPLETED
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.COMPLETED);
 
-        ServiceRequestRequest updatedRequest = new ServiceRequestRequest();
+        ServiceRequestRequest updatedRequest =
+                new ServiceRequestRequest();
 
         updatedRequest.setTitle("Novo título");
         updatedRequest.setDescription("Nova descrição");
@@ -402,11 +403,11 @@ class ServiceRequestServiceTest {
 
     @Test
     void shouldRejectUpdateOfCancelledServiceRequest() {
-        ServiceRequest existingRequest = createServiceRequest(
-                ServiceRequestStatus.CANCELLED
-        );
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.CANCELLED);
 
-        ServiceRequestRequest updatedRequest = new ServiceRequestRequest();
+        ServiceRequestRequest updatedRequest =
+                new ServiceRequestRequest();
 
         updatedRequest.setTitle("Novo título");
         updatedRequest.setDescription("Nova descrição");
@@ -426,9 +427,7 @@ class ServiceRequestServiceTest {
     @Test
     void shouldThrowExceptionWhenUpdatingStatusOfNonExistingServiceRequest() {
         ServiceRequestStatusRequest statusRequest =
-                new ServiceRequestStatusRequest();
-
-        statusRequest.setStatus(ServiceRequestStatus.IN_PROGRESS);
+                createStatusRequest(ServiceRequestStatus.IN_PROGRESS);
 
         when(repository.findById(999L))
                 .thenReturn(Optional.empty());
@@ -439,24 +438,27 @@ class ServiceRequestServiceTest {
         );
 
         verify(repository).findById(999L);
+        verify(repository, never()).save(any(ServiceRequest.class));
     }
 
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistingServiceRequest() {
-        ServiceRequestRequest request = new ServiceRequestRequest();
+        ServiceRequestRequest updatedRequest =
+                new ServiceRequestRequest();
 
-        request.setTitle("Solicitação inexistente");
-        request.setDescription("Solicitação que não existe");
+        updatedRequest.setTitle("Novo título");
+        updatedRequest.setDescription("Nova descrição");
 
         when(repository.findById(999L))
                 .thenReturn(Optional.empty());
 
         assertThrows(
                 ServiceRequestNotFoundException.class,
-                () -> service.update(999L, request)
+                () -> service.update(999L, updatedRequest)
         );
 
         verify(repository).findById(999L);
+        verify(repository, never()).save(any(ServiceRequest.class));
     }
 
     @Test
@@ -470,6 +472,99 @@ class ServiceRequestServiceTest {
         );
 
         verify(repository).findById(999L);
+    }
+
+    @Test
+    void shouldReturnPaginatedServiceRequests() {
+        ServiceRequest firstRequest =
+                createServiceRequest(ServiceRequestStatus.PENDING);
+
+        firstRequest.setTitle("Primeiro chamado");
+        firstRequest.setDescription("Primeira descrição");
+
+        ServiceRequest secondRequest =
+                createServiceRequest(ServiceRequestStatus.IN_PROGRESS);
+
+        secondRequest.setTitle("Segundo chamado");
+        secondRequest.setDescription("Segunda descrição");
+
+        Pageable pageable = PageRequest.of(0, 2);
+
+        Page<ServiceRequest> page = new PageImpl<>(
+                List.of(firstRequest, secondRequest),
+                pageable,
+                2
+        );
+
+        when(repository.findAll(pageable))
+                .thenReturn(page);
+
+        Page<ServiceRequestResponse> result =
+                service.findAll(pageable);
+
+        assertEquals(2, result.getContent().size());
+        assertEquals(2, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
+
+        assertEquals(
+                "Primeiro chamado",
+                result.getContent().get(0).getTitle()
+        );
+
+        assertEquals(
+                "Primeira descrição",
+                result.getContent().get(0).getDescription()
+        );
+
+        assertEquals(
+                ServiceRequestStatus.PENDING,
+                result.getContent().get(0).getStatus()
+        );
+
+        assertEquals(
+                "Segundo chamado",
+                result.getContent().get(1).getTitle()
+        );
+
+        assertEquals(
+                "Segunda descrição",
+                result.getContent().get(1).getDescription()
+        );
+
+        assertEquals(
+                ServiceRequestStatus.IN_PROGRESS,
+                result.getContent().get(1).getStatus()
+        );
+
+        verify(repository).findAll(pageable);
+    }
+
+    @Test
+    void shouldKeepStatusWhenUpdatingServiceRequest() {
+        ServiceRequest existingRequest =
+                createServiceRequest(ServiceRequestStatus.PENDING);
+
+        ServiceRequestRequest request =
+                new ServiceRequestRequest();
+
+        request.setTitle("Título atualizado");
+        request.setDescription("Descrição atualizada");
+
+        when(repository.findById(1L))
+                .thenReturn(Optional.of(existingRequest));
+
+        when(repository.save(existingRequest))
+                .thenReturn(existingRequest);
+
+        ServiceRequestResponse response =
+                service.update(1L, request);
+
+        assertEquals(
+                ServiceRequestStatus.PENDING,
+                response.getStatus()
+        );
+
+        verify(repository).save(existingRequest);
     }
 
     private ServiceRequest createServiceRequest(
