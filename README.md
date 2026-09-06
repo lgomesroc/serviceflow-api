@@ -37,8 +37,8 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 14 - Regras de negócio para solicitações](#aula-14---regras-de-negócio-para-solicitações)
     - [Aula 15 - Documentação da API](#aula-15---documentação-da-api)
     - [Aula 16 - Paginação e ordenação](#aula-16---paginação-e-ordenação)
-- [Próximas aulas](#próximas-aulas)
     - [Aula 17 - Testes adicionais e melhoria da cobertura](#aula-17---testes-adicionais-e-melhoria-da-cobertura)
+- [Próximas aulas](#próximas-aulas)
     - [Aula 18 - Perfis e configurações de ambiente](#aula-18---perfis-e-configurações-de-ambiente)
     - [Aula 19 - Dockerização da aplicação](#aula-19---dockerização-da-aplicação)
     - [Aula 20 - Docker Compose e ambiente da aplicação](#aula-20---docker-compose-e-ambiente-da-aplicação)
@@ -300,7 +300,7 @@ Em desenvolvimento.
 
 O projeto está sendo desenvolvido de forma incremental, evoluindo de uma API REST básica para uma aplicação com persistência em PostgreSQL, validação de dados, tratamento de exceções, regras de negócio, testes automatizados, documentação com OpenAPI/Swagger, paginação e ordenação dos resultados.
 
-Até o momento, foram concluídas **16 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
+Até o momento, foram concluídas **17 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
 
 ## Progresso do desenvolvimento
 
@@ -586,20 +586,28 @@ Até o momento, foram concluídas **16 aulas**, contemplando a implementação e
 - Execução da suíte completa de testes com sucesso: **43 testes, 0 falhas e 0 erros**.
 - Confirmação do `BUILD SUCCESS`.
 
-## Próximas aulas
-
 ### Aula 17 - Testes adicionais e melhoria da cobertura
 
-- Revisão da suíte atual de testes.
-- Identificação de cenários ainda não testados.
-- Criação de testes para casos de borda.
-- Ampliação dos testes das regras de negócio.
-- Ampliação dos testes de validação.
-- Ampliação dos testes dos endpoints.
-- Verificação dos cenários de erro HTTP.
-- Revisão dos testes existentes para evitar duplicação.
-- Execução da suíte completa de testes.
-- Análise da cobertura dos principais fluxos da aplicação.
+- Revisão da suíte de testes existente.
+- Identificação de cenários adicionais das regras de negócio que poderiam ser protegidos por testes.
+- Ampliação dos testes unitários da camada Service.
+- Cobertura das transições de status permitidas entre `PENDING`, `IN_PROGRESS`, `COMPLETED` e `CANCELLED`.
+- Cobertura das transições de status não permitidas.
+- Validação de que solicitações em `COMPLETED` não podem ter o status alterado.
+- Validação de que solicitações em `CANCELLED` não podem ter o status alterado.
+- Validação de que solicitações em estados finais não podem ter seus dados atualizados.
+- Validação do comportamento para atualização de solicitação inexistente.
+- Validação do comportamento para alteração de status de solicitação inexistente.
+- Revisão dos testes de Controller para os principais cenários de sucesso, validação e erro HTTP.
+- Cobertura dos cenários de `400 Bad Request`, `404 Not Found` e `409 Conflict`.
+- Revisão dos testes existentes para evitar cobertura desnecessariamente duplicada.
+- Remoção da operação de exclusão de solicitações de serviço.
+- Definição de que a API não disponibiliza `DELETE` para solicitações, preservando o histórico dos chamados para consultas futuras e auditoria.
+- Confirmação de que solicitações concluídas ou canceladas permanecem armazenadas e não podem ser alteradas.
+- Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas, 0 erros**.
+- Confirmação do `BUILD SUCCESS`.
+
+## Próximas aulas
 
 ### Aula 18 - Perfis e configurações de ambiente
 
@@ -651,10 +659,9 @@ Até o momento, foram concluídas **16 aulas**, contemplando a implementação e
 ✓ Aula 12 → Organização e melhoria da arquitetura da API<br>
 ✓ Aula 13 → Alteração de status das solicitações<br>
 ✓ Aula 14 → Regras de negócio para solicitações<br>
-✓ Aula 14 → Regras de negócio para solicitações<br>
 ✓ Aula 15 → Documentação da API com Swagger/OpenAPI<br>
 ✓ Aula 16 → Paginação e ordenação<br>
-- [ ] Aula 17 → Testes adicionais e melhoria da cobertura
+✓ Aula 17 → Testes adicionais e melhoria da cobertura<br>
 - [ ] Aula 18 → Segurança e autenticação da API
 - [ ] Aula 19 → Perfis e configurações de ambiente
 - [ ] Aula 20 → Preparação da aplicação para execução em ambiente de produção
@@ -698,6 +705,12 @@ PostgreSQL
 ```
 
 > Na Aula 12, a arquitetura foi revisada sem a necessidade de adicionar novas camadas ou abstrações. A estrutura atual permanece adequada ao tamanho e ao objetivo do projeto.
+
+> Na aula 17, a API não disponibiliza uma operação de exclusão (`DELETE`) para solicitações de serviço.
+
+> Os chamados devem permanecer armazenados para preservar o histórico das solicitações e permitir consultas futuras e auditoria.
+
+> Solicitações concluídas ou canceladas também permanecem armazenadas e não podem ser alteradas.
 
 ## Autor
 
