@@ -38,8 +38,8 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 15 - Documentação da API](#aula-15---documentação-da-api)
     - [Aula 16 - Paginação e ordenação](#aula-16---paginação-e-ordenação)
     - [Aula 17 - Testes adicionais e melhoria da cobertura](#aula-17---testes-adicionais-e-melhoria-da-cobertura)
-- [Próximas aulas](#próximas-aulas)
     - [Aula 18 - Perfis e configurações de ambiente](#aula-18---perfis-e-configurações-de-ambiente)
+- [Próximas aulas](#próximas-aulas)
     - [Aula 19 - Dockerização da aplicação](#aula-19---dockerização-da-aplicação)
     - [Aula 20 - Docker Compose e ambiente da aplicação](#aula-20---docker-compose-e-ambiente-da-aplicação)
 - [Resumo](#resumo)
@@ -81,11 +81,11 @@ O projeto será desenvolvido de forma incremental, priorizando uma implementaç�
 * Tratamento de erros da API
 * Testes automatizados
 * Documentação da API com OpenAPI e Swagger
+* Paginação e ordenação
+* Configurações por ambiente
 
 ### Planejadas
 
-- [ ] Paginação e ordenação
-- [ ] Configurações por ambiente
 - [ ] Dockerização da aplicação
 - [ ] Docker Compose
 - [ ] Logs e observabilidade básica
@@ -122,7 +122,8 @@ serviceflow-api/
 │   │   │   │   │   └── ServiceRequestService.java
 │   │   │   │   └── ServiceflowApiApplication.java
 │   │   └── resources/
-│   │   │   └── application.properties
+│   │   │   │   ├── application.properties
+│   │   │   │   └── application-dev.properties
 │   └── test/
 │   │   └── java/
 │   │   │   └── com/serviceflow/api/
@@ -130,6 +131,8 @@ serviceflow-api/
 │   │   │   │   │   └── ServiceRequestControllerTest.java
 │   │   │   │   ├── repository/
 │   │   │   │   │   └── ServiceRequestRepositoryTest.java
+│   │   │   │   │   └── resources/
+│   │   │   │   │       └── application-test.properties
 │   │   │   │   ├── service/
 │   │   │   │   │   └── ServiceRequestServiceTest.java
 │   │   │   │   └── ServiceflowApiApplicationTests.java
@@ -152,14 +155,14 @@ docker run --name serviceflow-postgres \
   -e POSTGRES_DB=serviceflow \
   -e POSTGRES_USER=serviceflow \
   -e POSTGRES_PASSWORD=serviceflow_dev \
-  -p 5432:5432 \
+  -p 5434:5432 \
   -d postgres
 ```
 
 A aplicação utiliza a seguinte configuração local:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/serviceflow
+spring.datasource.url=jdbc:postgresql://localhost:5434/serviceflow
 spring.datasource.username=serviceflow
 spring.datasource.password=serviceflow_dev
 ```
@@ -189,7 +192,7 @@ docker ps
 
 O contêiner deve aparecer com a porta:
 
-`0.0.0.0:5432->5432/tcp`
+`0.0.0.0:5434->5432/tcp`
 
 Caso o contêiner já exista, mas esteja parado:
 
@@ -204,13 +207,13 @@ docker run --name serviceflow-postgres \
   -e POSTGRES_DB=serviceflow \
   -e POSTGRES_USER=serviceflow \
   -e POSTGRES_PASSWORD=serviceflow_dev \
-  -p 5432:5432 \
+  -p 5434:5432 \
   -d postgres:17
 ```
 
 A aplicação utiliza:
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/serviceflow
+spring.datasource.url=jdbc:postgresql://localhost:5434/serviceflow
 spring.datasource.username=serviceflow
 spring.datasource.password=serviceflow_dev
 ```
@@ -225,6 +228,63 @@ Execute o projeto:
 ```bash
 ./mvnw spring-boot:run
 ```
+
+### Perfis e configurações de ambiente
+
+O projeto utiliza perfis do Spring Boot para separar as configurações de desenvolvimento e testes.
+
+As configurações comuns ficam em:
+
+```text
+src/main/resources/application.properties
+```
+
+A configuração específica do ambiente de desenvolvimento fica em:
+
+```text
+src/main/resources/application-dev.properties
+```
+
+A configuração específica dos testes fica em:
+
+```text
+src/test/resources/application-test.properties
+```
+
+### Perfil de desenvolvimento
+
+Para executar a aplicação utilizando o perfil `dev`:
+
+```bash
+SPRING_PROFILES_ACTIVE=dev DB_USERNAME=serviceflow DB_PASSWORD=serviceflow_dev ./mvnw spring-boot:run
+```
+
+O comando ativa o perfil `dev` e utiliza o arquivo `application-dev.properties`.
+
+### Perfil de testes
+
+Os testes utilizam o perfil `test` através da anotação `@ActiveProfiles("test")`.
+
+Para executar a suíte completa de testes:
+
+```bash
+DB_USERNAME=serviceflow DB_PASSWORD=serviceflow_dev ./mvnw test
+```
+
+O comando utiliza o arquivo `application-test.properties`.
+
+### Variáveis de ambiente
+
+As configurações de usuário e senha do PostgreSQL são obtidas através das variáveis de ambiente:
+
+```text
+DB_USERNAME
+DB_PASSWORD
+```
+
+O arquivo `.env` é utilizado apenas localmente para manter essas informações disponíveis durante o desenvolvimento e não é versionado no Git.
+
+O arquivo `.env.example` é mantido no repositório como referência das variáveis utilizadas pelo projeto.
 
 ### Build
 
@@ -262,7 +322,7 @@ Para utilizar a API localmente, é necessário que:
 
 - A aplicação Spring Boot esteja em execução.
 - O contêiner PostgreSQL `serviceflow-postgres` esteja em execução.
-- O PostgreSQL esteja disponível na porta `5432`.
+- O PostgreSQL esteja disponível na porta `5434`.
 
 Verifique o contêiner com:
 
@@ -300,7 +360,7 @@ Em desenvolvimento.
 
 O projeto está sendo desenvolvido de forma incremental, evoluindo de uma API REST básica para uma aplicação com persistência em PostgreSQL, validação de dados, tratamento de exceções, regras de negócio, testes automatizados, documentação com OpenAPI/Swagger, paginação e ordenação dos resultados.
 
-Até o momento, foram concluídas **17 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
+Até o momento, foram concluídas **18 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
 
 ## Progresso do desenvolvimento
 
@@ -607,17 +667,27 @@ Até o momento, foram concluídas **17 aulas**, contemplando a implementação e
 - Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas, 0 erros**.
 - Confirmação do `BUILD SUCCESS`.
 
-## Próximas aulas
-
 ### Aula 18 - Perfis e configurações de ambiente
 
 - Introdução aos perfis de configuração do Spring Boot.
 - Separação das configurações de desenvolvimento e teste.
-- Criação de configurações específicas por ambiente.
-- Revisão das configurações de acesso ao PostgreSQL.
-- Utilização de variáveis de ambiente para configurações sensíveis.
-- Validação da aplicação utilizando diferentes configurações.
-- Execução dos testes após a alteração das configurações.
+- Criação do arquivo `application-dev.properties`.
+- Criação do arquivo `application-test.properties`.
+- Manutenção das configurações comuns no `application.properties`.
+- Configuração do perfil `dev` para execução da aplicação.
+- Configuração do perfil `test` para execução dos testes.
+- Utilização de `@ActiveProfiles("test")` nos testes que carregam o contexto do Spring.
+- Utilização de variáveis de ambiente para usuário e senha do PostgreSQL.
+- Validação da execução da aplicação utilizando o perfil `dev`.
+- Validação da execução dos testes utilizando o perfil `test`.
+- Criação do `.env.example` para documentar as variáveis utilizadas pelo projeto.
+- Manutenção do `.env` apenas no ambiente local, sem versionamento no Git.
+- Validação de que o perfil `dev` não é carregado automaticamente durante os testes.
+- Validação de que o perfil `test` é carregado especificamente pelos testes.
+- Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas e 0 erros**.
+- Confirmação do `BUILD SUCCESS`.
+
+## Próximas aulas
 
 ### Aula 19 - Dockerização da aplicação
 
@@ -662,7 +732,7 @@ Até o momento, foram concluídas **17 aulas**, contemplando a implementação e
 ✓ Aula 15 → Documentação da API com Swagger/OpenAPI<br>
 ✓ Aula 16 → Paginação e ordenação<br>
 ✓ Aula 17 → Testes adicionais e melhoria da cobertura<br>
-- [ ] Aula 18 → Segurança e autenticação da API
+✓ Aula 18 → Perfis e configurações de ambiente<br>
 - [ ] Aula 19 → Perfis e configurações de ambiente
 - [ ] Aula 20 → Preparação da aplicação para execução em ambiente de produção
 - [ ] Aula 21 → Dockerização da aplicação
