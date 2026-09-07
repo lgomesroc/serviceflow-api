@@ -1,0 +1,30 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: serviceflow-postgres
+    environment:
+      POSTGRES_DB: serviceflow
+      POSTGRES_USER: serviceflow
+      POSTGRES_PASSWORD: serviceflow_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: serviceflow-api
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/serviceflow
+      SPRING_DATASOURCE_USERNAME: serviceflow
+      SPRING_DATASOURCE_PASSWORD: serviceflow_dev
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+    external: true
+    name: 013630895ff28384d15b75f912c0981c39812d53580db9c4819142c5df5ffce2
