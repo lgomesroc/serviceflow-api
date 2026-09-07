@@ -14,6 +14,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Banco de dados](#banco-de-dados)
 - [Executando o projeto](#executando-o-projeto)
+  - [Docker](#docker)
   - [PostgreSQL](#postgresql)
   - [Build](#build)
 - [Documentação da API](#documentação-da-api)
@@ -54,7 +55,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 * **Hibernate** — utilizado como implementação JPA para realizar o mapeamento entre as entidades Java e as tabelas do banco de dados.
 * **PostgreSQL** — escolhido como banco de dados relacional por ser robusto, amplamente utilizado em aplicações corporativas e adequado ao modelo de dados do projeto.
 * **Maven** — utilizado para gerenciamento de dependências, configuração do projeto e execução do ciclo de build e testes.
-* **Docker** — utilizado para executar o PostgreSQL em ambiente local de forma isolada e reproduzível, sem necessidade de instalar o banco diretamente no sistema operacional.
+* **Docker** — utilizado para executar a API Spring Boot e o PostgreSQL em contêineres, permitindo um ambiente isolado e reproduzível.
 * **JUnit** — utilizado para criação e execução dos testes automatizados.
 * **Mockito** — utilizado nos testes unitários para criar mocks das dependências e permitir o isolamento da camada Service.
 * **OpenAPI** — utilizado para definir e descrever o contrato da API REST.
@@ -83,10 +84,12 @@ O projeto será desenvolvido de forma incremental, priorizando uma implementaç�
 * Documentação da API com OpenAPI e Swagger
 * Paginação e ordenação
 * Configurações por ambiente
+* Dockerização da aplicação
+* Execução da API em contêiner Docker
+* Comunicação entre a API e o PostgreSQL através de rede Docker
 
 ### Planejadas
 
-- [ ] Dockerização da aplicação
 - [ ] Docker Compose
 - [ ] Logs e observabilidade básica
 
@@ -137,6 +140,7 @@ serviceflow-api/
 │   │   │   │   │   └── ServiceRequestServiceTest.java
 │   │   │   │   └── ServiceflowApiApplicationTests.java
 ├── .gitignore
+├── Dockerfile
 ├── pom.xml
 ├── mvnw
 └── README.md
@@ -146,9 +150,9 @@ serviceflow-api/
 
 O projeto utiliza PostgreSQL para persistência dos dados.
 
-Durante o desenvolvimento local, o PostgreSQL pode ser executado utilizando Docker.
+Durante o desenvolvimento, o PostgreSQL é executado em um contêiner Docker chamado `serviceflow-postgres`.
 
-Exemplo:
+A configuração utilizada pelo contêiner é:
 
 ```bash
 docker run --name serviceflow-postgres \
@@ -156,15 +160,21 @@ docker run --name serviceflow-postgres \
   -e POSTGRES_USER=serviceflow \
   -e POSTGRES_PASSWORD=serviceflow_dev \
   -p 5434:5432 \
-  -d postgres
+  -d postgres:17
 ```
 
-A aplicação utiliza a seguinte configuração local:
+A aplicação, quando executada localmente fora do Docker, utiliza a seguinte configuração:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5434/serviceflow
 spring.datasource.username=serviceflow
 spring.datasource.password=serviceflow_dev
+```
+
+Quando a API é executada dentro do Docker, a comunicação com o PostgreSQL ocorre através da rede Docker `serviceflow-network`, utilizando o nome do contêiner como host:
+
+```text
+jdbc:postgresql://serviceflow-postgres:5432/serviceflow
 ```
 
 > As credenciais apresentadas acima são destinadas exclusivamente ao ambiente de desenvolvimento local. Em ambientes reais, as credenciais devem ser armazenadas de forma segura, por exemplo através de variáveis de ambiente ou mecanismos de gerenciamento de secrets.
@@ -178,6 +188,22 @@ git clone https://github.com/lgomesroc/serviceflow-api.git
 cd serviceflow-api
 ```
 
+### Docker
+
+A execução da aplicação e do PostgreSQL durante o desenvolvimento é realizada através de contêineres Docker.
+
+O ambiente utilizado na Aula 19 é composto por:
+
+```text
+serviceflow-api
+        │
+        │ serviceflow-network
+        ▼
+serviceflow-postgres
+```
+
+A API utiliza a imagem Docker `serviceflow-api:latest` e o PostgreSQL utiliza o contêiner `serviceflow-postgres`.
+
 ### PostgreSQL
 
 O projeto utiliza um contêiner PostgreSQL executado através do Docker.
@@ -190,9 +216,9 @@ Verifique:
 docker ps
 ```
 
-O contêiner deve aparecer com a porta:
+O contêiner deve aparecer como:
 
-`0.0.0.0:5434->5432/tcp`
+`serviceflow-postgres`
 
 Caso o contêiner já exista, mas esteja parado:
 
@@ -200,33 +226,76 @@ Caso o contêiner já exista, mas esteja parado:
 docker start serviceflow-postgres
 ```
 
-Caso ainda não exista, crie o contêiner:
+### Build da aplicação
 
+Antes de criar a imagem Docker da API, gere o JAR da aplicação:
 ```bash
-docker run --name serviceflow-postgres \
-  -e POSTGRES_DB=serviceflow \
-  -e POSTGRES_USER=serviceflow \
-  -e POSTGRES_PASSWORD=serviceflow_dev \
-  -p 5434:5432 \
-  -d postgres:17
+DB_USERNAME=serviceflow DB_PASSWORD=serviceflow_dev ./mvnw clean package
 ```
 
-A aplicação utiliza:
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5434/serviceflow
-spring.datasource.username=serviceflow
-spring.datasource.password=serviceflow_dev
-```
+O artefato será gerado em:
 
-Com o PostgreSQL em execução, execute os testes:
+`target/serviceflow-api-0.0.1-SNAPSHOT.jar`
+
+### Construção da imagem Docker
+
+Com o JAR gerado, construa a imagem da API:
+
+`docker build -t serviceflow-api` .
+
+A imagem criada será:
+
+`serviceflow-api:latest`
+
+### Rede Docker
+
+A API e o PostgreSQL utilizam a mesma rede Docker para permitir a comunicação entre os contêineres:
+
+`docker network create serviceflow-network`
+
+Conecte o PostgreSQL à rede:
+
+`docker network connect serviceflow-network serviceflow-postgres`
+
+Execução da API
+
+A API é executada dentro de um contêiner Docker:
 
 ```bash
-./mvnw test
+docker run -d \
+  --name serviceflow-api \
+  --network serviceflow-network \
+  -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=dev \
+  -e DB_USERNAME=serviceflow \
+  -e DB_PASSWORD=serviceflow_dev \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://serviceflow-postgres:5432/serviceflow \
+  serviceflow-api:latest
 ```
+Após a inicialização, a API estará disponível em:
 
-Execute o projeto:
+http://localhost:8080
+
+Para verificar os contêineres em execução:
+
+`docker ps`
+
+Para consultar os logs da API:
+
+`docker logs serviceflow-api`
+
+Para testar o endpoint principal:
+
+`curl http://localhost:8080/api/service-requests`
+
+> A inicialização da API e do PostgreSQL é realizada através de contêineres Docker. O Docker Compose ainda não é utilizado neste estágio do projeto e será abordado na Aula 20.
+
+### Testes
+
+Os testes automatizados continuam sendo executados através do Maven:
+
 ```bash
-./mvnw spring-boot:run
+DB_USERNAME=serviceflow DB_PASSWORD=serviceflow_dev ./mvnw test
 ```
 
 ### Perfis e configurações de ambiente
@@ -253,13 +322,26 @@ src/test/resources/application-test.properties
 
 ### Perfil de desenvolvimento
 
-Para executar a aplicação utilizando o perfil `dev`:
+Perfil de desenvolvimento
+
+Quando a API é executada dentro do Docker, o perfil dev é ativado através da variável de ambiente:
 
 ```bash
-SPRING_PROFILES_ACTIVE=dev DB_USERNAME=serviceflow DB_PASSWORD=serviceflow_dev ./mvnw spring-boot:run
+SPRING_PROFILES_ACTIVE=dev
 ```
 
-O comando ativa o perfil `dev` e utiliza o arquivo `application-dev.properties`.
+As credenciais do banco são fornecidas através das variáveis:
+
+```bash
+DB_USERNAME=serviceflow
+DB_PASSWORD=serviceflow_dev
+```
+
+A URL do PostgreSQL utilizada pelo contêiner da API é definida através de:
+
+```bash
+SPRING_DATASOURCE_URL=jdbc:postgresql://serviceflow-postgres:5432/serviceflow
+```
 
 ### Perfil de testes
 
@@ -281,6 +363,14 @@ As configurações de usuário e senha do PostgreSQL são obtidas através das v
 DB_USERNAME
 DB_PASSWORD
 ```
+
+Durante a execução da API em Docker, também é utilizada:
+
+`SPRING_PROFILES_ACTIVE`
+
+e a URL do banco pode ser definida através de:
+
+`SPRING_DATASOURCE_URL`
 
 O arquivo `.env` é utilizado apenas localmente para manter essas informações disponíveis durante o desenvolvimento e não é versionado no Git.
 
@@ -318,11 +408,12 @@ O Swagger UI permite visualizar e testar os endpoints da API diretamente pelo na
 
 ### Requisitos
 
-Para utilizar a API localmente, é necessário que:
+Para executar a API localmente utilizando Docker, é necessário que:
 
-- A aplicação Spring Boot esteja em execução.
+- O Docker esteja em execução.
 - O contêiner PostgreSQL `serviceflow-postgres` esteja em execução.
-- O PostgreSQL esteja disponível na porta `5434`.
+- O contêiner `serviceflow-api` esteja em execução.
+- Os contêineres estejam conectados à rede `serviceflow-network`.
 
 Verifique o contêiner com:
 
@@ -336,7 +427,7 @@ Caso o contêiner esteja parado:
 docker start serviceflow-postgres
 ```
 
-Após iniciar a aplicação, acesse:
+Após iniciar a API, acesse:
 
 ```text
 http://localhost:8080/swagger-ui/index.html
@@ -360,7 +451,7 @@ Em desenvolvimento.
 
 O projeto está sendo desenvolvido de forma incremental, evoluindo de uma API REST básica para uma aplicação com persistência em PostgreSQL, validação de dados, tratamento de exceções, regras de negócio, testes automatizados, documentação com OpenAPI/Swagger, paginação e ordenação dos resultados.
 
-Até o momento, foram concluídas **18 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
+Até o momento, foram concluídas **19 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
 
 ## Progresso do desenvolvimento
 
@@ -687,18 +778,28 @@ Até o momento, foram concluídas **18 aulas**, contemplando a implementação e
 - Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas e 0 erros**.
 - Confirmação do `BUILD SUCCESS`.
 
-## Próximas aulas
-
 ### Aula 19 - Dockerização da aplicação
-
 - Introdução à execução da aplicação Spring Boot em Docker.
 - Criação do `Dockerfile`.
 - Utilização do JAR da aplicação na construção da imagem Docker.
 - Criação da imagem Docker da API.
-- Execução da API em um contêiner.
-- Configuração da comunicação entre a API e o PostgreSQL.
-- Validação dos endpoints com a aplicação executando em Docker.
-- Execução dos testes e validação do funcionamento da aplicação.
+- Execução da API em um contêiner Docker.
+- Criação da rede Docker `serviceflow-network`.
+- Conexão do contêiner PostgreSQL à rede Docker.
+- Configuração da comunicação entre a API e o PostgreSQL através da rede Docker.
+- Utilização do nome do contêiner `serviceflow-postgres` como host do PostgreSQL.
+- Configuração das variáveis de ambiente para execução da API.
+- Ativação do perfil dev no contêiner da API.
+- Execução da API através do `docker run`.
+- Validação da comunicação entre os contêineres.
+- Validação do endpoint `GET /api/service-requests` com a API executando em Docker.
+- Validação da persistência dos dados no PostgreSQL.
+- Validação dos logs da aplicação através do Docker.
+- Validação do Swagger UI com a API executando em Docker.
+- Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas e 0 erros**.
+- Confirmação do `BUILD SUCCESS`.
+
+## Próximas aulas
 
 ### Aula 20 - Docker Compose e ambiente da aplicação
 
@@ -713,6 +814,83 @@ Até o momento, foram concluídas **18 aulas**, contemplando a implementação e
 - Validação da persistência dos dados no PostgreSQL.
 - Execução da suíte completa de testes.
 - Documentação dos comandos necessários para iniciar o ambiente.
+
+### Aula 21 — Logs e observabilidade básica
+
+* Entender logs de aplicação
+* Utilizar logs do Docker
+* Identificar erros durante a execução da aplicação
+* Analisar o comportamento da API através dos logs
+* Conhecer conceitos básicos de observabilidade
+
+### Aula 22 — Integração com Frontend
+
+* Entender a comunicação entre frontend e API REST
+* Consumir os endpoints do ServiceFlow API
+* Integrar operações de consulta e cadastro
+* Trabalhar com respostas HTTP da API
+* Validar o fluxo completo entre frontend, API e banco de dados
+
+### Aula 23 — Segurança da API
+
+* Entender autenticação e autorização
+* Introduzir Spring Security
+* Proteger endpoints da API
+* Entender o funcionamento de autenticação baseada em JWT
+* Diferenciar autenticação de autorização
+
+### Aula 24 — Revisão final da API REST
+
+* Revisar os endpoints existentes
+* Revisar métodos HTTP e códigos de status
+* Revisar validações
+* Revisar tratamento de exceções
+* Revisar DTOs e regras de negócio
+* Revisar paginação e ordenação
+* Revisar documentação com OpenAPI e Swagger
+
+### Aula 25 — Qualidade e revisão de código
+
+* Revisar a organização do projeto
+* Revisar responsabilidades das classes
+* Revisar princípios SOLID
+* Identificar duplicações e código desnecessário
+* Avaliar possíveis melhorias sem adicionar complexidade desnecessária
+* Realizar uma revisão geral do código
+
+### Aula 26 — Testes e validação final
+
+* Executar a suíte completa de testes
+* Validar os endpoints da API
+* Validar a aplicação utilizando Docker Compose
+* Validar a comunicação com o PostgreSQL
+* Validar a documentação da API
+* Corrigir eventuais problemas encontrados na validação final
+
+### Aula 27 — Preparação para portfólio
+
+* Revisar o README
+* Revisar a estrutura do repositório
+* Documentar tecnologias e funcionalidades
+* Documentar a execução do projeto
+* Documentar Docker e Docker Compose
+* Apresentar testes e documentação da API
+* Preparar o projeto para apresentação no GitHub
+
+### Aula 28 — Preparação para entrevistas
+
+* Aprender a apresentar o ServiceFlow API
+* Explicar a arquitetura do projeto
+* Explicar as principais decisões técnicas
+* Revisar perguntas sobre Java e Spring Boot
+* Revisar perguntas sobre JPA e Hibernate
+* Revisar perguntas sobre testes
+* Revisar perguntas sobre Docker
+* Revisar perguntas sobre API REST
+* Explicar regras de negócio e decisões do projeto
+
+> **Observação:** a Aula 28 faz parte da trilha de desenvolvimento do projeto e permanecerá no README durante o desenvolvimento. Na documentação final do projeto, esta aula não será incluída.
+
 
 ## Resumo
 ✓ Aula 1 → Configuração inicial e integração com PostgreSQL<br>
@@ -733,18 +911,16 @@ Até o momento, foram concluídas **18 aulas**, contemplando a implementação e
 ✓ Aula 16 → Paginação e ordenação<br>
 ✓ Aula 17 → Testes adicionais e melhoria da cobertura<br>
 ✓ Aula 18 → Perfis e configurações de ambiente<br>
-- [ ] Aula 19 → Perfis e configurações de ambiente
-- [ ] Aula 20 → Preparação da aplicação para execução em ambiente de produção
-- [ ] Aula 21 → Dockerização da aplicação
-- [ ] Aula 22 → Integração entre aplicação e PostgreSQL utilizando Docker Compose
-- [ ] Aula 23 → Logs e observabilidade básica
-- [ ] Aula 24 → Tratamento de configurações e variáveis de ambiente
-- [ ] Aula 25 → Revisão geral e refatoração
-- [ ] Aula 26 → Testes finais e validação da API
-- [ ] Aula 27 → Preparação do projeto para portfólio
-- [ ] Aula 28 → Documentação final e README profissional
-- [ ] Aula 29 → Revisão técnica para entrevistas
-- [ ] Aula 30 → Finalização do projeto e apresentação técnica
+✓ Aula 19 → Dockerização da aplicação<br>
+- [ ] Aula 20 → Docker Compose e ambiente da aplicação
+- [ ] Aula 21 → Logs e observabilidade básica
+- [ ] Aula 22 → Integração com Frontend
+- [ ] Aula 23 → Segurança da API
+- [ ] Aula 24 — Revisão final da API REST
+- [ ] Aula 25 — Qualidade e revisão de código
+- [ ] Aula 26 — Testes e validação final
+- [ ] Aula 27 — Preparação para portfólio
+- [ ] Aula 28 — Preparação para entrevistas
 
 Tínhamos aproximadamente:
 ```text
