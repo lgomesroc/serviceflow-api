@@ -14,8 +14,9 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Banco de dados](#banco-de-dados)
 - [Executando o projeto](#executando-o-projeto)
-  - [Docker](#docker)
-  - [PostgreSQL](#postgresql)
+  - [Docker Compose](#docker-compose)
+  - [Testes](#testes)
+  - [Perfis e configurações de ambiente](#perfis-e-configurações-de-ambiente)
   - [Build](#build)
 - [Documentação da API](#documentação-da-api)
   - [Requisitos](#requisitos)
@@ -40,9 +41,17 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 16 - Paginação e ordenação](#aula-16---paginação-e-ordenação)
     - [Aula 17 - Testes adicionais e melhoria da cobertura](#aula-17---testes-adicionais-e-melhoria-da-cobertura)
     - [Aula 18 - Perfis e configurações de ambiente](#aula-18---perfis-e-configurações-de-ambiente)
-- [Próximas aulas](#próximas-aulas)
     - [Aula 19 - Dockerização da aplicação](#aula-19---dockerização-da-aplicação)
     - [Aula 20 - Docker Compose e ambiente da aplicação](#aula-20---docker-compose-e-ambiente-da-aplicação)
+- [Próximas aulas](#próximas-aulas)
+    - [Aula 21 — Logs e observabilidade básica](#aula-21--logs-e-observabilidade-básica)
+    - [Aula 22 — Integração com Frontend](#aula-22--integração-com-frontend)
+    - [Aula 23 — Segurança da API](#aula-23--segurança-da-api)
+    - [Aula 24 — Revisão final da API REST](#aula-24--revisão-final-da-api-rest)
+    - [Aula 25 — Qualidade e revisão de código](#aula-25--qualidade-e-revisão-de-código)
+    - [Aula 26 — Testes e validação final](#aula-26--testes-e-validação-final)
+    - [Aula 27 — Preparação para portfólio](#aula-27--preparação-para-portfólio)
+    - [Aula 28 — Preparação para entrevistas](#aula-28--preparação-para-entrevistas)
 - [Resumo](#resumo)
 - [Autor](#autor)
 
@@ -87,10 +96,11 @@ O projeto será desenvolvido de forma incremental, priorizando uma implementaç�
 * Dockerização da aplicação
 * Execução da API em contêiner Docker
 * Comunicação entre a API e o PostgreSQL através de rede Docker
+* Execução da API e PostgreSQL através do Docker Compose
+* Persistência dos dados através de volume Docker
 
 ### Planejadas
 
-- [ ] Docker Compose
 - [ ] Logs e observabilidade básica
 
 ## Estrutura do projeto
@@ -140,6 +150,7 @@ serviceflow-api/
 │   │   │   │   │   └── ServiceRequestServiceTest.java
 │   │   │   │   └── ServiceflowApiApplicationTests.java
 ├── .gitignore
+├── docker-compose.yml
 ├── Dockerfile
 ├── pom.xml
 ├── mvnw
@@ -152,30 +163,29 @@ O projeto utiliza PostgreSQL para persistência dos dados.
 
 Durante o desenvolvimento, o PostgreSQL é executado em um contêiner Docker chamado `serviceflow-postgres`.
 
-A configuração utilizada pelo contêiner é:
+O PostgreSQL é executado através do serviço `postgres` definido no arquivo `docker-compose.yml`.
 
-```bash
-docker run --name serviceflow-postgres \
-  -e POSTGRES_DB=serviceflow \
-  -e POSTGRES_USER=serviceflow \
-  -e POSTGRES_PASSWORD=serviceflow_dev \
-  -p 5434:5432 \
-  -d postgres:17
+A configuração utilizada pelo ambiente Docker Compose é:
+
+```yaml
+POSTGRES_DB: serviceflow
+POSTGRES_USER: serviceflow
+POSTGRES_PASSWORD: serviceflow_dev
 ```
 
-A aplicação, quando executada localmente fora do Docker, utiliza a seguinte configuração:
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5434/serviceflow
-spring.datasource.username=serviceflow
-spring.datasource.password=serviceflow_dev
-```
-
-Quando a API é executada dentro do Docker, a comunicação com o PostgreSQL ocorre através da rede Docker `serviceflow-network`, utilizando o nome do contêiner como host:
+O PostgreSQL é exposto na porta `5432` do ambiente local:
 
 ```text
-jdbc:postgresql://serviceflow-postgres:5432/serviceflow
+localhost:5432
 ```
+
+Dentro da rede criada pelo Docker Compose, a API acessa o PostgreSQL através do nome do serviço:
+
+```text
+jdbc:postgresql://postgres:5432/serviceflow
+```
+
+O ambiente utiliza um volume externo para preservar os dados existentes do PostgreSQL mesmo após a recriação dos contêineres.
 
 > As credenciais apresentadas acima são destinadas exclusivamente ao ambiente de desenvolvimento local. Em ambientes reais, as credenciais devem ser armazenadas de forma segura, por exemplo através de variáveis de ambiente ou mecanismos de gerenciamento de secrets.
 
@@ -188,114 +198,175 @@ git clone https://github.com/lgomesroc/serviceflow-api.git
 cd serviceflow-api
 ```
 
-### Docker
+### Docker Compose
 
-A execução da aplicação e do PostgreSQL durante o desenvolvimento é realizada através de contêineres Docker.
+A partir da Aula 20, a execução da API e do PostgreSQL é realizada através do Docker Compose.
 
-O ambiente utilizado na Aula 19 é composto por:
+O arquivo `docker-compose.yml` localizado na raiz do projeto define os serviços:
 
 ```text
-serviceflow-api
-        │
-        │ serviceflow-network
-        ▼
-serviceflow-postgres
+docker-compose.yml
+       │
+       ├── postgres
+       │      │
+       │      └── PostgreSQL 17
+       │
+       └── api
+              │
+              └── ServiceFlow API
 ```
 
-A API utiliza a imagem Docker `serviceflow-api:latest` e o PostgreSQL utiliza o contêiner `serviceflow-postgres`.
+O Docker Compose também cria automaticamente a rede utilizada pelos serviços, permitindo que a API se comunique com o PostgreSQL através do nome do serviço `postgres`.
 
-### PostgreSQL
-
-O projeto utiliza um contêiner PostgreSQL executado através do Docker.
-
-Antes de executar a aplicação, o **Docker deve estar em execução e o contêiner `serviceflow-postgres` também deve estar iniciado.**
-
-Verifique:
+Para iniciar o ambiente:
 
 ```bash
-docker ps
+docker-compose up -d --build
 ```
 
-O contêiner deve aparecer como:
-
-`serviceflow-postgres`
-
-Caso o contêiner já exista, mas esteja parado:
-
-```bash
-docker start serviceflow-postgres
-```
-
-### Build da aplicação
-
-Antes de criar a imagem Docker da API, gere o JAR da aplicação:
-```bash
-DB_USERNAME=serviceflow DB_PASSWORD=serviceflow_dev ./mvnw clean package
-```
-
-O artefato será gerado em:
-
-`target/serviceflow-api-0.0.1-SNAPSHOT.jar`
-
-### Construção da imagem Docker
-
-Com o JAR gerado, construa a imagem da API:
-
-`docker build -t serviceflow-api` .
-
-A imagem criada será:
-
-`serviceflow-api:latest`
-
-### Rede Docker
-
-A API e o PostgreSQL utilizam a mesma rede Docker para permitir a comunicação entre os contêineres:
-
-`docker network create serviceflow-network`
-
-Conecte o PostgreSQL à rede:
-
-`docker network connect serviceflow-network serviceflow-postgres`
-
-Execução da API
-
-A API é executada dentro de um contêiner Docker:
-
-```bash
-docker run -d \
-  --name serviceflow-api \
-  --network serviceflow-network \
-  -p 8080:8080 \
-  -e SPRING_PROFILES_ACTIVE=dev \
-  -e DB_USERNAME=serviceflow \
-  -e DB_PASSWORD=serviceflow_dev \
-  -e SPRING_DATASOURCE_URL=jdbc:postgresql://serviceflow-postgres:5432/serviceflow \
-  serviceflow-api:latest
-```
-Após a inicialização, a API estará disponível em:
-
-http://localhost:8080
+O parâmetro `--build` garante que a imagem da API seja reconstruída antes da inicialização dos contêineres.
 
 Para verificar os contêineres em execução:
 
-`docker ps`
+```bash
+docker-compose ps
+```
 
-Para consultar os logs da API:
+Para visualizar os logs da API:
 
-`docker logs serviceflow-api`
+```bash
+docker-compose logs api
+```
 
-Para testar o endpoint principal:
+Para acompanhar os logs em tempo real:
 
-`curl http://localhost:8080/api/service-requests`
+```bash
+docker-compose logs -f api
+```
 
-> A inicialização da API e do PostgreSQL é realizada através de contêineres Docker. O Docker Compose ainda não é utilizado neste estágio do projeto e será abordado na Aula 20.
+Para parar os serviços:
+
+```bash
+docker-compose stop
+```
+
+Para iniciar novamente os serviços já criados:
+
+```bash
+docker-compose start
+```
+
+Para parar e remover os contêineres e a rede criada pelo Compose:
+
+```bash
+docker-compose down
+```
+
+> O comando `docker-compose` down não remove o volume externo utilizado pelo PostgreSQL. Os dados persistem mesmo após a remoção dos contêineres.
+
+### Comunicação entre a API e o PostgreSQL
+
+Quando a API é executada dentro do Docker Compose, `localhost` não deve ser utilizado para acessar o PostgreSQL.
+
+A API utiliza o nome do serviço definido no `docker-compose.yml`:
+
+```text
+API
+ ↓
+postgres:5432
+ ↓
+PostgreSQL
+```
+
+A URL utilizada pela API dentro do ambiente Docker Compose é:
+
+```text
+jdbc:postgresql://postgres:5432/serviceflow
+```
+
+Já os testes executados pelo Maven diretamente no computador utilizam:
+
+```text
+jdbc:postgresql://localhost:5432/serviceflow
+```
+
+Isso ocorre porque, nos testes executados pelo host, `localhost` representa o próprio computador. Dentro do contêiner da API, `localhost` representa o próprio contêiner da API.
+
+### PostgreSQL
+
+O PostgreSQL é iniciado automaticamente pelo Docker Compose.
+
+Para verificar o banco em execução:
+
+```bash
+docker-compose ps
+```
+
+O serviço PostgreSQL será executado no contêiner:
+
+```text
+serviceflow-postgres
+```
+
+Para acessar o PostgreSQL diretamente pelo contêiner:
+
+```bash
+docker exec -it serviceflow-postgres psql -U serviceflow -d serviceflow
+```
+
+Para consultar a quantidade de solicitações armazenadas:
+
+```bash
+docker exec serviceflow-postgres psql -U serviceflow -d serviceflow -c "SELECT COUNT(*) FROM service_requests;"
+```
+
+### API
+
+Após iniciar o ambiente com Docker Compose, a API estará disponível em:
+
+```text
+http://localhost:8080
+```
+
+O endpoint principal pode ser testado através de:
+
+```bash
+curl http://localhost:8080/api/service-requests
+```
+
+A documentação da API está disponível através do Swagger UI:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
 
 ### Testes
 
 Os testes automatizados continuam sendo executados através do Maven:
 
 ```bash
-DB_USERNAME=serviceflow DB_PASSWORD=serviceflow_dev ./mvnw test
+./mvnw clean test
+```
+
+Os testes utilizam o perfil test e a configuração definida em:
+
+```text
+src/test/resources/application-test.properties
+```
+
+Como os testes são executados diretamente no ambiente local, a conexão com o PostgreSQL utiliza:
+
+```text
+jdbc:postgresql://localhost:5432/serviceflow
+```
+
+A suíte completa de testes foi validada com sucesso na Aula 20:
+
+```text
+45 testes executados
+0 falhas
+0 erros
+BUILD SUCCESS
 ```
 
 ### Perfis e configurações de ambiente
@@ -320,40 +391,20 @@ A configuração específica dos testes fica em:
 src/test/resources/application-test.properties
 ```
 
-### Perfil de desenvolvimento
+O perfil `dev` é utilizado pela API executada no Docker Compose.
 
-Perfil de desenvolvimento
+O perfil `test` é utilizado pelos testes automatizados através da anotação `@ActiveProfiles("test")`.
 
-Quando a API é executada dentro do Docker, o perfil dev é ativado através da variável de ambiente:
-
-```bash
-SPRING_PROFILES_ACTIVE=dev
-```
-
-As credenciais do banco são fornecidas através das variáveis:
+As credenciais utilizadas no ambiente de desenvolvimento são:
 
 ```bash
 DB_USERNAME=serviceflow
 DB_PASSWORD=serviceflow_dev
 ```
 
-A URL do PostgreSQL utilizada pelo contêiner da API é definida através de:
+O arquivo `.env` permanece apenas no ambiente local e não é versionado no Git.
 
-```bash
-SPRING_DATASOURCE_URL=jdbc:postgresql://serviceflow-postgres:5432/serviceflow
-```
-
-### Perfil de testes
-
-Os testes utilizam o perfil `test` através da anotação `@ActiveProfiles("test")`.
-
-Para executar a suíte completa de testes:
-
-```bash
-DB_USERNAME=serviceflow DB_PASSWORD=serviceflow_dev ./mvnw test
-```
-
-O comando utiliza o arquivo `application-test.properties`.
+O arquivo `.env.example` permanece no repositório como referência das variáveis utilizadas pelo projeto.
 
 ### Variáveis de ambiente
 
@@ -451,7 +502,7 @@ Em desenvolvimento.
 
 O projeto está sendo desenvolvido de forma incremental, evoluindo de uma API REST básica para uma aplicação com persistência em PostgreSQL, validação de dados, tratamento de exceções, regras de negócio, testes automatizados, documentação com OpenAPI/Swagger, paginação e ordenação dos resultados.
 
-Até o momento, foram concluídas **19 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
+Até o momento, foram concluídas **20 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
 
 ## Progresso do desenvolvimento
 
@@ -779,6 +830,7 @@ Até o momento, foram concluídas **19 aulas**, contemplando a implementação e
 - Confirmação do `BUILD SUCCESS`.
 
 ### Aula 19 - Dockerização da aplicação
+
 - Introdução à execução da aplicação Spring Boot em Docker.
 - Criação do `Dockerfile`.
 - Utilização do JAR da aplicação na construção da imagem Docker.
@@ -799,21 +851,30 @@ Até o momento, foram concluídas **19 aulas**, contemplando a implementação e
 - Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas e 0 erros**.
 - Confirmação do `BUILD SUCCESS`.
 
-## Próximas aulas
-
 ### Aula 20 - Docker Compose e ambiente da aplicação
 
 - Introdução ao Docker Compose.
 - Criação do `docker-compose.yml`.
 - Configuração do serviço da API.
 - Configuração do serviço PostgreSQL.
-- Configuração da comunicação entre os contêineres.
-- Configuração das variáveis de ambiente.
-- Inicialização da aplicação e do banco através do Docker Compose.
-- Validação da API através do Swagger UI.
-- Validação da persistência dos dados no PostgreSQL.
-- Execução da suíte completa de testes.
-- Documentação dos comandos necessários para iniciar o ambiente.
+- Configuração da comunicação entre os contêineres através da rede criada pelo Docker Compose.
+- Utilização do nome do serviço `postgres` como host do PostgreSQL dentro do ambiente Docker Compose.
+- Configuração das variáveis de ambiente da API.
+- Configuração de volume externo para preservação dos dados existentes do PostgreSQL.
+- Migração do ambiente executado manualmente com `docker run` para Docker Compose.
+- Inicialização da API e do PostgreSQL através do `docker-compose up`.
+- Validação dos contêineres através do `docker-compose ps`.
+- Validação dos logs da aplicação através do `docker-compose logs`.
+- Validação da comunicação entre a API e o PostgreSQL.
+- Validação da preservação dos dados existentes no PostgreSQL.
+- Criação de uma nova solicitação através do Swagger UI com a API executando em Docker Compose.
+- Validação da persistência da nova solicitação diretamente no PostgreSQL.
+- Correção da configuração do perfil de testes para execução local através do Maven.
+- Diferenciação entre `localhost:5432`, utilizado pelos testes executados no host, e `postgres:5432`, utilizado pela API dentro do Docker Compose.
+- Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas e 0 erros**.
+- Confirmação do `BUILD SUCCESS`.
+
+## Próximas aulas
 
 ### Aula 21 — Logs e observabilidade básica
 
@@ -912,7 +973,7 @@ Até o momento, foram concluídas **19 aulas**, contemplando a implementação e
 ✓ Aula 17 → Testes adicionais e melhoria da cobertura<br>
 ✓ Aula 18 → Perfis e configurações de ambiente<br>
 ✓ Aula 19 → Dockerização da aplicação<br>
-- [ ] Aula 20 → Docker Compose e ambiente da aplicação
+✓ Aula 20 → Docker Compose e ambiente da aplicação<br>
 - [ ] Aula 21 → Logs e observabilidade básica
 - [ ] Aula 22 → Integração com Frontend
 - [ ] Aula 23 → Segurança da API
