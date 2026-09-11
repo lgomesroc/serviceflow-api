@@ -21,6 +21,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 - [Documentação da API](#documentação-da-api)
   - [Requisitos](#requisitos)
   - [Paginação e ordenação](#paginação-e-ordenação)
+- [Deploy](#deploy)
 - [Status do projeto](#status-do-projeto)
 - [Progresso do desenvolvimento](#progresso-do-desenvolvimento)
     - [Aula 1 - Configuração inicial e integração com PostgreSQL](#aula-1---configuração-inicial-e-integração-com-postgresql)
@@ -455,6 +456,10 @@ http://localhost:8080/swagger-ui/index.html
 
 http://localhost:8080/v3/api-docs
 
+**Swagger UI — ambiente publicado:**
+
+[https://serviceflow-api-a9jk.onrender.com/swagger-ui/index.html](https://serviceflow-api-a9jk.onrender.com/swagger-ui/index.html)
+
 O Swagger UI permite visualizar e testar os endpoints da API diretamente pelo navegador, incluindo parâmetros, dados de requisição e respostas HTTP.
 
 ### Requisitos
@@ -495,6 +500,43 @@ A documentação do endpoint `GET /api/service-requests` também contempla os pa
 - `sort` — campo e direção utilizados para ordenação, por exemplo `createdAt,desc`.
 
 A paginação e a ordenação foram implementadas utilizando os recursos do Spring Data e podem ser testadas diretamente através do Swagger UI.
+
+## Deploy
+
+A API está publicada em ambiente externo utilizando **Render** para hospedagem da aplicação e **Neon** para o banco de dados PostgreSQL.
+
+### Ambiente publicado
+
+**API:**
+
+https://serviceflow-api-a9jk.onrender.com
+
+**Swagger UI:**
+
+https://serviceflow-api-a9jk.onrender.com/swagger-ui/index.html
+
+**OpenAPI JSON:**
+
+https://serviceflow-api-a9jk.onrender.com/v3/api-docs
+
+### Infraestrutura
+
+- **Render** — hospedagem da aplicação Spring Boot
+- **Neon** — PostgreSQL em ambiente cloud
+- **Docker** — utilizado na construção e execução da aplicação
+- **Java 21** — runtime da aplicação
+
+O deploy utiliza variáveis de ambiente para configurar a conexão com o PostgreSQL, mantendo as credenciais do banco fora do código-fonte.
+
+A aplicação publicada utiliza o perfil `dev` e se conecta ao PostgreSQL hospedado no Neon.
+
+O ambiente publicado foi validado através do Swagger UI, incluindo:
+
+- Consulta de solicitações de serviço
+- Criação de solicitações
+- Persistência dos dados no PostgreSQL
+- Consulta dos dados persistidos
+- Comunicação entre a API publicada e o banco PostgreSQL
 
 ## Status do projeto
 
