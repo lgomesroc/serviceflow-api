@@ -8,12 +8,17 @@ import com.serviceflow.api.entity.ServiceRequestStatus;
 import com.serviceflow.api.exception.InvalidServiceRequestStateException;
 import com.serviceflow.api.exception.ServiceRequestNotFoundException;
 import com.serviceflow.api.repository.ServiceRequestRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ServiceRequestService {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(ServiceRequestService.class);
 
     private final ServiceRequestRepository repository;
 
@@ -25,6 +30,11 @@ public class ServiceRequestService {
         ServiceRequest serviceRequest = toEntity(request);
 
         ServiceRequest savedRequest = repository.save(serviceRequest);
+
+        logger.info(
+                "Solicitação de serviço criada com sucesso. id={}",
+                savedRequest.getId()
+        );
 
         return toResponse(savedRequest);
     }
@@ -68,14 +78,21 @@ public class ServiceRequestService {
 
         ServiceRequest existingRequest = findEntityById(id);
 
-        validateStatusTransition(
-                existingRequest.getStatus(),
-                request.getStatus()
-        );
+        ServiceRequestStatus currentStatus = existingRequest.getStatus();
+        ServiceRequestStatus newStatus = request.getStatus();
 
-        existingRequest.setStatus(request.getStatus());
+        validateStatusTransition(currentStatus, newStatus);
+
+        existingRequest.setStatus(newStatus);
 
         ServiceRequest updatedRequest = repository.save(existingRequest);
+
+        logger.info(
+                "Status da solicitação alterado. id={}, de={}, para={}",
+                id,
+                currentStatus,
+                newStatus
+        );
 
         return toResponse(updatedRequest);
     }
@@ -86,6 +103,12 @@ public class ServiceRequestService {
 
         if (currentStatus == ServiceRequestStatus.COMPLETED
                 || currentStatus == ServiceRequestStatus.CANCELLED) {
+
+            logger.warn(
+                    "Tentativa de alterar solicitação com status final. statusAtual={}, novoStatus={}",
+                    currentStatus,
+                    newStatus
+            );
 
             throw new InvalidServiceRequestStateException(
                     "Não é possível alterar o status de uma solicitação finalizada."
@@ -102,6 +125,13 @@ public class ServiceRequestService {
                                 || newStatus == ServiceRequestStatus.CANCELLED));
 
         if (!validTransition) {
+
+            logger.warn(
+                    "Tentativa de realizar transição de status inválida. de={}, para={}",
+                    currentStatus,
+                    newStatus
+            );
+
             throw new InvalidServiceRequestStateException(
                     "Transição de status inválida: "
                             + currentStatus
