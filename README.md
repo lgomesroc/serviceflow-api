@@ -45,8 +45,8 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
     - [Aula 18 - Perfis e configurações de ambiente](#aula-18---perfis-e-configurações-de-ambiente)
     - [Aula 19 - Dockerização da aplicação](#aula-19---dockerização-da-aplicação)
     - [Aula 20 - Docker Compose e ambiente da aplicação](#aula-20---docker-compose-e-ambiente-da-aplicação)
-- [Próximas aulas](#próximas-aulas)
     - [Aula 21 — Logs e observabilidade básica](#aula-21--logs-e-observabilidade-básica)
+- [Próximas aulas](#próximas-aulas)
     - [Aula 22 — Integração com Frontend](#aula-22--integração-com-frontend)
     - [Aula 23 — Segurança da API](#aula-23--segurança-da-api)
     - [Aula 24 — Revisão final da API REST](#aula-24--revisão-final-da-api-rest)
@@ -101,10 +101,10 @@ O projeto será desenvolvido de forma incremental, priorizando uma implementaç�
 * Comunicação entre a API e o PostgreSQL através de rede Docker
 * Execução da API e PostgreSQL através do Docker Compose
 * Persistência dos dados através de volume Docker
-
-### Planejadas
-
-- [ ] Logs e observabilidade básica
+* Logs de aplicação utilizando SLF4J
+* Logs de eventos de negócio nos níveis INFO e WARN
+* Análise de logs da aplicação e dos contêineres através do Docker
+* Observabilidade básica através da análise de comportamento da API pelos logs
 
 ## Estrutura do projeto
 
@@ -629,7 +629,7 @@ Em desenvolvimento.
 
 O projeto está sendo desenvolvido de forma incremental, evoluindo de uma API REST básica para uma aplicação com persistência em PostgreSQL, validação de dados, tratamento de exceções, regras de negócio, testes automatizados, documentação com OpenAPI/Swagger, paginação e ordenação dos resultados.
 
-Até o momento, foram concluídas **20 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
+Até o momento, foram concluídas **21 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
 
 ## Progresso do desenvolvimento
 
@@ -1001,15 +1001,46 @@ Até o momento, foram concluídas **20 aulas**, contemplando a implementação e
 - Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas e 0 erros**.
 - Confirmação do `BUILD SUCCESS`.
 
-## Próximas aulas
-
 ### Aula 21 — Logs e observabilidade básica
 
-* Entender logs de aplicação
-* Utilizar logs do Docker
-* Identificar erros durante a execução da aplicação
-* Analisar o comportamento da API através dos logs
-* Conhecer conceitos básicos de observabilidade
+- Introdução aos conceitos básicos de logs e observabilidade.
+- Diferenciação entre os níveis de log `INFO`, `WARN` e `ERROR`, além da identificação de registros `FATAL` nos logs do PostgreSQL.
+- Análise dos logs gerados pelo Spring Boot durante a inicialização da aplicação.
+- Análise dos logs do Tomcat durante a inicialização do servidor HTTP.
+- Análise dos logs do HikariCP durante a criação da conexão com o PostgreSQL.
+- Análise dos logs do Hibernate durante a inicialização do JPA.
+- Análise dos logs do SpringDoc durante a inicialização da documentação OpenAPI.
+- Utilização do `docker-compose logs` para visualizar os logs dos contêineres.
+- Utilização do `docker-compose logs -f` para acompanhar os logs da API em tempo real.
+- Utilização de filtros com `grep` para localizar logs específicos.
+- Análise dos logs de `WARN` gerados pelo Spring Boot e SpringDoc.
+- Identificação do aviso relacionado ao `spring.jpa.open-in-view`.
+- Identificação dos avisos relacionados aos endpoints do SpringDoc.
+- Identificação do aviso relacionado à serialização de objetos `PageImpl`.
+- Análise de uma resposta `404 Not Found` para uma solicitação inexistente.
+- Análise de uma resposta `409 Conflict` para uma transição de status inválida.
+- Análise dos logs do PostgreSQL.
+- Identificação de um registro histórico de falha de autenticação no PostgreSQL.
+- Diferenciação entre uma falha de autenticação registrada como `FATAL` e uma falha do próprio banco de dados.
+- Verificação da ausência de logs `ERROR` na execução atual da API.
+- Verificação da inexistência de logs explícitos da aplicação antes da implementação.
+- Identificação da infraestrutura de logging já disponibilizada pelo Spring Boot através das dependências existentes.
+- Implementação de logging próprio na camada `ServiceRequestService` utilizando SLF4J.
+- Criação do `Logger` através de `LoggerFactory`.
+- Adição de log `INFO` após a criação de uma solicitação de serviço.
+- Adição de log `INFO` após uma alteração de status realizada com sucesso.
+- Registro do ID da solicitação, status anterior e novo status durante a alteração.
+- Adição de log `WARN` para tentativa de alteração de uma solicitação em estado final.
+- Adição de log `WARN` para tentativa de realizar uma transição de status inválida.
+- Validação prática do log de criação da solicitação.
+- Validação prática do log de alteração de status de `PENDING` para `IN_PROGRESS`.
+- Validação prática do log de uma tentativa de transição inválida de `IN_PROGRESS` para `PENDING`.
+- Validação do retorno HTTP `409 Conflict` para a transição inválida.
+- Validação dos logs gerados pela aplicação diretamente através do Docker.
+- Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas e 0 erros**.
+- Confirmação do `BUILD SUCCESS`.
+
+## Próximas aulas
 
 ### Aula 22 — Integração com Frontend
 
@@ -1101,7 +1132,7 @@ Até o momento, foram concluídas **20 aulas**, contemplando a implementação e
 ✓ Aula 18 → Perfis e configurações de ambiente<br>
 ✓ Aula 19 → Dockerização da aplicação<br>
 ✓ Aula 20 → Docker Compose e ambiente da aplicação<br>
-- [ ] Aula 21 → Logs e observabilidade básica
+✓ Aula 21 → Logs e observabilidade básica
 - [ ] Aula 22 → Integração com Frontend
 - [ ] Aula 23 → Segurança da API
 - [ ] Aula 24 — Revisão final da API REST
