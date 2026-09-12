@@ -22,6 +22,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
   - [Requisitos](#requisitos)
   - [Paginação e ordenação](#paginação-e-ordenação)
 - [Deploy](#deploy)
+- [CI](#ci)
 - [Status do projeto](#status-do-projeto)
 - [Progresso do desenvolvimento](#progresso-do-desenvolvimento)
     - [Aula 1 - Configuração inicial e integração com PostgreSQL](#aula-1---configuração-inicial-e-integração-com-postgresql)
@@ -70,6 +71,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 * **Mockito** — utilizado nos testes unitários para criar mocks das dependências e permitir o isolamento da camada Service.
 * **OpenAPI** — utilizado para definir e descrever o contrato da API REST.
 * **Swagger UI** — utilizado para disponibilizar uma interface web para consulta e teste dos endpoints da API.
+- **GitHub Actions** — integração contínua (CI) e execução automatizada dos testes
 
 > As tecnologias foram escolhidas considerando o objetivo do projeto: construir uma API REST com uma stack comum no desenvolvimento backend corporativo, mantendo a implementação simples e adequada ao nível júnior.
 
@@ -153,8 +155,8 @@ serviceflow-api/
 ├── .gitignore
 ├── docker-compose.yml
 ├── Dockerfile
-├── pom.xml
 ├── mvnw
+├── pom.xml
 └── README.md
 ```
 
@@ -537,6 +539,89 @@ O ambiente publicado foi validado através do Swagger UI, incluindo:
 - Persistência dos dados no PostgreSQL
 - Consulta dos dados persistidos
 - Comunicação entre a API publicada e o banco PostgreSQL
+
+## CI
+
+O projeto utiliza **GitHub Actions** para executar automaticamente a suíte de testes a cada Pull Request direcionado à branch `main`.
+
+O objetivo do CI é validar as alterações antes que elas sejam incorporadas à branch principal.
+
+### Execução dos testes
+
+O workflow de CI está definido em:
+
+```text
+.github/workflows/ci.yml
+```
+
+Durante a execução, o GitHub Actions:
+
+* Utiliza Java 21 através do Temurin.
+* Utiliza o Maven Wrapper do projeto.
+* Inicia temporariamente um contêiner PostgreSQL para os testes.
+* Executa a suíte completa de testes através do Maven.
+* Considera a execução concluída com sucesso somente quando os testes são aprovados.
+
+O comando utilizado pelo workflow é:
+
+```bash
+./mvnw clean test
+```
+
+### PostgreSQL no GitHub Actions
+
+Os testes de integração do projeto dependem de um banco PostgreSQL.
+
+No ambiente do GitHub Actions, o PostgreSQL é executado **temporariamente como um serviço do próprio ambiente de CI**.
+
+Esse banco não é o mesmo PostgreSQL utilizado no desenvolvimento local, nem o PostgreSQL utilizado pelo ambiente publicado no Render.
+
+A estrutura utilizada pelo CI é:
+
+```text
+GitHub Actions
+      │
+      ├── Java 21
+      │
+      ├── PostgreSQL temporário
+      │
+      └── ./mvnw clean test
+```
+
+O PostgreSQL utilizado pelo GitHub Actions existe somente durante a execução do workflow e é descartado ao final da execução.
+
+As credenciais utilizadas pelo ambiente de testes do CI são as mesmas definidas em `src/test/resources/application-test.properties`, permitindo que a suíte de testes seja executada sem depender de um banco de dados externo.
+
+### Pull Requests
+
+As alterações destinadas à branch `main` devem ser realizadas através de Pull Requests.
+
+O fluxo utilizado pelo projeto é:
+
+```text
+Branch de desenvolvimento
+          ↓
+    Pull Request
+          ↓
+     GitHub Actions
+          ↓
+   PostgreSQL temporário
+          ↓
+      45 testes
+          ↓
+       Sucesso
+          ↓
+      Merge na main
+```
+
+Após o merge na `main`, o **Render** realiza automaticamente o deploy da nova versão da aplicação.
+
+Dessa forma, o projeto utiliza:
+
+* **CI — GitHub Actions:** validação automática dos testes.
+* **CD — Render:** publicação automática da aplicação após alterações na `main`.
+
+O ambiente de CI e o ambiente de produção são independentes. O PostgreSQL temporário utilizado pelo GitHub Actions não possui relação com o banco PostgreSQL hospedado no Neon utilizado pela aplicação publicada.
 
 ## Status do projeto
 
@@ -1066,3 +1151,9 @@ PostgreSQL
 Luciano Rocha
 
 Desenvolvedor Backend / Full Stack Júnior
+
+## Licença
+
+Este projeto está licenciado sob a **MIT License**.
+
+Consulte o arquivo [`LICENSE`](./LICENSE) para obter o texto completo da licença.
