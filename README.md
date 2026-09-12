@@ -6,105 +6,151 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 
 ## Índice
 
-- [Tecnologias](#tecnologias)
-- [Objetivo](#objetivo)
-- [Funcionalidades](#funcionalidades)
-  - [Implementadas](#implementadas)
-  - [Planejadas](#planejadas)
-- [Estrutura do projeto](#estrutura-do-projeto)
-- [Banco de dados](#banco-de-dados)
-- [Executando o projeto](#executando-o-projeto)
-  - [Docker Compose](#docker-compose)
-  - [Testes](#testes)
-  - [Perfis e configurações de ambiente](#perfis-e-configurações-de-ambiente)
-  - [Build](#build)
-- [Documentação da API](#documentação-da-api)
-  - [Requisitos](#requisitos)
-  - [Paginação e ordenação](#paginação-e-ordenação)
-- [Deploy](#deploy)
-- [CI](#ci)
-- [Status do projeto](#status-do-projeto)
-- [Progresso do desenvolvimento](#progresso-do-desenvolvimento)
-    - [Aula 1 - Configuração inicial e integração com PostgreSQL](#aula-1---configuração-inicial-e-integração-com-postgresql)
-    - [Aula 2 - JPA, Hibernate e persistência de dados](#aula-2---jpa-hibernate-e-persistência-de-dados)
-    - [Aula 3 - Entidade ServiceRequest e Repository](#aula-3---entidade-servicerequest-e-repository)
-    - [Aula 4 - Camadas Service e Controller e primeiros endpoints REST](#aula-4---camadas-service-e-controller-e-primeiros-endpoints-rest)
-    - [Aula 5 - Consulta e atualização de solicitações por ID](#aula-5---consulta-e-atualização-de-solicitações-por-id)
-    - [Aula 6 - Tratamento de exceções e respostas HTTP](#aula-6---tratamento-de-exceções-e-respostas-http)
-    - [Aula 7 - Validação de dados da API](#aula-7---validação-de-dados-da-api)
-    - [Aula 8 - Testes dos endpoints e cobertura da API](#aula-8---testes-dos-endpoints-e-cobertura-da-api)
-    - [Aula 9 - Testes unitários e integração](#aula-9---testes-unitários-e-integração)
-    - [Aula 10 - DTOs e separação entre entidade e contrato da API](#aula-10---dtos-e-separação-entre-entidade-e-contrato-da-api)
-    - [Aula 11 - Mapeamento entre DTOs e entidades](#aula-11---mapeamento-entre-dtos-e-entidades)
-    - [Aula 12 - Organização e melhoria da arquitetura da API](#aula-12---organização-e-melhoria-da-arquitetura-da-api)
-    - [Aula 13 - Alteração de status das solicitações](#aula-13---alteração-de-status-das-solicitações)
-    - [Aula 14 - Regras de negócio para solicitações](#aula-14---regras-de-negócio-para-solicitações)
-    - [Aula 15 - Documentação da API](#aula-15---documentação-da-api)
-    - [Aula 16 - Paginação e ordenação](#aula-16---paginação-e-ordenação)
-    - [Aula 17 - Testes adicionais e melhoria da cobertura](#aula-17---testes-adicionais-e-melhoria-da-cobertura)
-    - [Aula 18 - Perfis e configurações de ambiente](#aula-18---perfis-e-configurações-de-ambiente)
-    - [Aula 19 - Dockerização da aplicação](#aula-19---dockerização-da-aplicação)
-    - [Aula 20 - Docker Compose e ambiente da aplicação](#aula-20---docker-compose-e-ambiente-da-aplicação)
-    - [Aula 21 — Logs e observabilidade básica](#aula-21--logs-e-observabilidade-básica)
-- [Próximas aulas](#próximas-aulas)
-    - [Aula 22 — Integração com Frontend](#aula-22--integração-com-frontend)
-    - [Aula 23 — Segurança da API](#aula-23--segurança-da-api)
-    - [Aula 24 — Revisão final da API REST](#aula-24--revisão-final-da-api-rest)
-    - [Aula 25 — Qualidade e revisão de código](#aula-25--qualidade-e-revisão-de-código)
-    - [Aula 26 — Testes e validação final](#aula-26--testes-e-validação-final)
-    - [Aula 27 — Preparação para portfólio](#aula-27--preparação-para-portfólio)
-    - [Aula 28 — Preparação para entrevistas](#aula-28--preparação-para-entrevistas)
-- [Resumo](#resumo)
-- [Autor](#autor)
+* [Tecnologias](#tecnologias)
+* [Objetivo](#objetivo)
+* [Funcionalidades](#funcionalidades)
+  * [Implementadas](#implementadas)
+  * [Planejadas](#planejadas)
+* [Estrutura do projeto](#estrutura-do-projeto)
+* [Banco de dados](#banco-de-dados)
+* [Executando o projeto](#executando-o-projeto)
+  * [Docker Compose](#docker-compose)
+  * [Testes](#testes)
+  * [Perfis e configurações de ambiente](#perfis-e-configurações-de-ambiente)
+  * [Build](#build)
+* [Documentação da API](#documentação-da-api)
+  * [Requisitos](#requisitos)
+  * [Paginação e ordenação](#paginação-e-ordenação)
+* [Frontend](#frontend)
+* [Deploy](#deploy)
+* [CI](#ci)
+* [Status do projeto](#status-do-projeto)
+* [Progresso do desenvolvimento](#progresso-do-desenvolvimento)
+  * [Aula 1 - Configuração inicial e integração com PostgreSQL](#aula-1---configuração-inicial-e-integração-com-postgresql)
+  * [Aula 2 - JPA, Hibernate e persistência de dados](#aula-2---jpa-hibernate-e-persistência-de-dados)
+  * [Aula 3 - Entidade ServiceRequest e Repository](#aula-3---entidade-servicerequest-e-repository)
+  * [Aula 4 - Camadas Service e Controller e primeiros endpoints REST](#aula-4---camadas-service-e-controller-e-primeiros-endpoints-rest)
+  * [Aula 5 - Consulta e atualização de solicitações por ID](#aula-5---consulta-e-atualização-de-solicitações-por-id)
+  * [Aula 6 - Tratamento de exceções e respostas HTTP](#aula-6---tratamento-de-exceções-e-respostas-http)
+  * [Aula 7 - Validação de dados da API](#aula-7---validação-de-dados-da-api)
+  * [Aula 8 - Testes dos endpoints e cobertura da API](#aula-8---testes-dos-endpoints-e-cobertura-da-api)
+  * [Aula 9 - Testes unitários e integração](#aula-9---testes-unitários-e-integração)
+  * [Aula 10 - DTOs e separação entre entidade e contrato da API](#aula-10---dtos-e-separação-entre-entidade-e-contrato-da-api)
+  * [Aula 11 - Mapeamento entre DTOs e entidades](#aula-11---mapeamento-entre-dtos-e-entidades)
+  * [Aula 12 - Organização e melhoria da arquitetura da API](#aula-12---organização-e-melhoria-da-arquitetura-da-api)
+  * [Aula 13 - Alteração de status das solicitações](#aula-13---alteração-de-status-das-solicitações)
+  * [Aula 14 - Regras de negócio para solicitações](#aula-14---regras-de-negócio-para-solicitações)
+  * [Aula 15 - Documentação da API](#aula-15---documentação-da-api)
+  * [Aula 16 - Paginação e ordenação](#aula-16---paginação-e-ordenação)
+  * [Aula 17 - Testes adicionais e melhoria da cobertura](#aula-17---testes-adicionais-e-melhoria-da-cobertura)
+  * [Aula 18 - Perfis e configurações de ambiente](#aula-18---perfis-e-configurações-de-ambiente)
+  * [Aula 19 - Dockerização da aplicação](#aula-19---dockerização-da-aplicação)
+  * [Aula 20 - Docker Compose e ambiente da aplicação](#aula-20---docker-compose-e-ambiente-da-aplicação)
+  * [Aula 21 — Logs e observabilidade básica](#aula-21--logs-e-observabilidade-básica)
+  * [Aula 22 — Integração com Frontend](#aula-22--integração-com-frontend)
+* [Próximas aulas](#próximas-aulas)
+  * [Aula 23 — Segurança da API](#aula-23--segurança-da-api)
+  * [Aula 24 — Revisão final da API REST](#aula-24--revisão-final-da-api-rest)
+  * [Aula 25 — Qualidade e revisão de código](#aula-25--qualidade-e-revisão-de-código)
+  * [Aula 26 — Testes e validação final](#aula-26--testes-e-validação-final)
+  * [Aula 27 — Preparação para portfólio](#aula-27--preparação-para-portfólio)
+  * [Aula 28 — Preparação para entrevistas](#aula-28--preparação-para-entrevistas)
+* [Resumo](#resumo)
+* [Autor](#autor)
+* [Licença](#licença)
+
 
 ## Tecnologias
 
-* **Java 21** — versão LTS do Java utilizada no projeto, oferecendo estabilidade, recursos modernos da linguagem e suporte de longo prazo.
-* **Spring Boot 4** — escolhido para simplificar a configuração e o desenvolvimento da aplicação, permitindo estruturar a API REST sem configurações desnecessárias.
-* **Spring Web MVC** — utilizado para criação dos Controllers e implementação dos endpoints HTTP da API REST.
-* **Spring Data JPA** — utilizado para simplificar o acesso aos dados e a implementação do Repository, reduzindo código repetitivo de persistência.
-* **Hibernate** — utilizado como implementação JPA para realizar o mapeamento entre as entidades Java e as tabelas do banco de dados.
-* **PostgreSQL** — escolhido como banco de dados relacional por ser robusto, amplamente utilizado em aplicações corporativas e adequado ao modelo de dados do projeto.
-* **Maven** — utilizado para gerenciamento de dependências, configuração do projeto e execução do ciclo de build e testes.
-* **Docker** — utilizado para executar a API Spring Boot e o PostgreSQL em contêineres, permitindo um ambiente isolado e reproduzível.
-* **JUnit** — utilizado para criação e execução dos testes automatizados.
-* **Mockito** — utilizado nos testes unitários para criar mocks das dependências e permitir o isolamento da camada Service.
-* **OpenAPI** — utilizado para definir e descrever o contrato da API REST.
-* **Swagger UI** — utilizado para disponibilizar uma interface web para consulta e teste dos endpoints da API.
-- **GitHub Actions** — integração contínua (CI) e execução automatizada dos testes
+### Backend
+
+* Java 21
+* Spring Boot 4
+* Spring Web MVC
+* Spring Data JPA
+* Hibernate
+* PostgreSQL
+* Maven
+* Docker
+* Docker Compose
+* JUnit
+* Mockito
+* OpenAPI
+* Swagger UI
+* GitHub Actions
+
+### Frontend
+
+* React
+* Vite
+* Axios
+* Bootstrap
+* React Bootstrap
+* React Router
+* Lucide React
+
+O frontend está integrado ao backend através da API REST e está localizado no diretório `frontend/`, dentro do mesmo repositório.
 
 > As tecnologias foram escolhidas considerando o objetivo do projeto: construir uma API REST com uma stack comum no desenvolvimento backend corporativo, mantendo a implementação simples e adequada ao nível júnior.
 
 ## Objetivo
 
-O ServiceFlow tem como objetivo simular uma API de gerenciamento de chamados de suporte técnico, permitindo evoluir gradualmente funcionalidades comuns encontradas em sistemas corporativos.
+O **ServiceFlow** é uma aplicação web para gerenciamento de solicitações de serviço, desenvolvida com uma API REST em Java e um frontend em React.
 
-O projeto será desenvolvido de forma incremental, priorizando uma implementação simples e adequada ao nível júnior, sem adicionar complexidade desnecessária.
+O projeto foi desenvolvido com foco em boas práticas de desenvolvimento backend, organização em camadas, persistência de dados, validação, tratamento de exceções, regras de negócio, testes automatizados, documentação da API, containerização, CI/CD e integração com frontend.
+
+A aplicação permite registrar solicitações, consultar os chamados cadastrados, acompanhar seus status e navegar pelos registros através de paginação.
 
 ## Funcionalidades
 
 ### Implementadas
 
-* Cadastro de chamados
-* Consulta de chamados
-* Atualização de chamados
+#### Backend
+
+* Criação de solicitações de serviço
+* Consulta de todas as solicitações
+* Consulta de solicitação por ID
+* Atualização de solicitações
 * Alteração de status
-* Validação de dados
-* Persistência com PostgreSQL
-* Tratamento de erros da API
+* Validação dos dados recebidos pela API
+* Tratamento global de exceções
+* Regras de negócio para transição de status
+* Bloqueio de alterações após os status `COMPLETED` e `CANCELLED`
+* Paginação e ordenação das solicitações
+* Persistência dos dados em PostgreSQL
+* Documentação da API com OpenAPI e Swagger UI
 * Testes automatizados
-* Documentação da API com OpenAPI e Swagger
-* Paginação e ordenação
-* Configurações por ambiente
-* Dockerização da aplicação
-* Execução da API em contêiner Docker
-* Comunicação entre a API e o PostgreSQL através de rede Docker
-* Execução da API e PostgreSQL através do Docker Compose
-* Persistência dos dados através de volume Docker
-* Logs de aplicação utilizando SLF4J
-* Logs de eventos de negócio nos níveis INFO e WARN
-* Análise de logs da aplicação e dos contêineres através do Docker
-* Observabilidade básica através da análise de comportamento da API pelos logs
+* Execução da aplicação em Docker e Docker Compose
+* CI com GitHub Actions
+
+#### Frontend
+
+* Dashboard para visualização das solicitações
+* Exibição das solicitações em páginas de 10 registros
+* Navegação entre as páginas
+* Exibição da quantidade total de solicitações
+* Exibição da quantidade de solicitações por status na página atual
+* Identificação visual dos status `PENDING`, `IN_PROGRESS`, `COMPLETED` e `CANCELLED`
+* Formulário para criação de novas solicitações
+* Validação básica dos campos do formulário
+* Estados de carregamento durante as operações
+* Tratamento de erros na comunicação com a API
+* Tela de confirmação após a criação de uma solicitação
+* Integração com a API REST através do Axios
+* Configuração para execução local e integração com a API publicada
+
+### Planejadas
+
+* Autenticação e autorização
+* Proteção dos endpoints
+* Alteração de status através do frontend com autenticação
+* Tela de detalhes da solicitação
+* Revisão final da API REST
+* Melhorias de qualidade e revisão de código
+* Testes e validação final
+* Preparação do projeto para portfólio
+* Preparação para entrevistas
+
 
 ## Estrutura do projeto
 
@@ -112,11 +158,36 @@ A aplicação segue a estrutura padrão de um projeto Spring Boot:
 
 ```text
 serviceflow-api/
+├── frontend/ 
+│   ├── public/ 
+│   │   ├── favicon.svg 
+│   │   └── icons.svg 
+│   ├── src/ 
+│   │   ├── assets/ 
+│   │   │   ├── hero.png 
+│   │   │   ├── react.svg 
+│   │   │   └── vite.svg 
+│   │   ├── pages/ 
+│   │   │   └── NewRequest.jsx 
+│   │   ├── services/ 
+│   │   │   └── api.js 
+│   │   ├── App.css 
+│   │   ├── App.jsx 
+│   │   ├── index.css 
+│   │   └── main.jsx 
+│   ├── .gitignore 
+│   ├── .oxlintrc.json 
+│   ├── index.html 
+│   ├── package.json 
+│   ├── package-lock.json 
+│   ├── README.md 
+│   └── vite.config.js
 ├── src/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── com/serviceflow/api/
 │   │   │   │   ├── config/
+│   │   │   │   │   ├── CorsConfig.java
 │   │   │   │   │   └── OpenApiConfig.java
 │   │   │   │   ├── controller/
 │   │   │   │   │   └── ServiceRequestController.java
@@ -203,256 +274,112 @@ cd serviceflow-api
 
 ### Docker Compose
 
-A partir da Aula 20, a execução da API e do PostgreSQL é realizada através do Docker Compose.
-
-O arquivo `docker-compose.yml` localizado na raiz do projeto define os serviços:
-
-```text
-docker-compose.yml
-       │
-       ├── postgres
-       │      │
-       │      └── PostgreSQL 17
-       │
-       └── api
-              │
-              └── ServiceFlow API
-```
-
-O Docker Compose também cria automaticamente a rede utilizada pelos serviços, permitindo que a API se comunique com o PostgreSQL através do nome do serviço `postgres`.
-
-Para iniciar o ambiente:
+Na raiz do projeto, execute:
 
 ```bash
 docker-compose up -d --build
 ```
 
-O parâmetro `--build` garante que a imagem da API seja reconstruída antes da inicialização dos contêineres.
-
-Para verificar os contêineres em execução:
+Para verificar os containers:
 
 ```bash
 docker-compose ps
 ```
 
-Para visualizar os logs da API:
-
-```bash
-docker-compose logs api
-```
-
-Para acompanhar os logs em tempo real:
-
-```bash
-docker-compose logs -f api
-```
-
-Para parar os serviços:
-
-```bash
-docker-compose stop
-```
-
-Para iniciar novamente os serviços já criados:
-
-```bash
-docker-compose start
-```
-
-Para parar e remover os contêineres e a rede criada pelo Compose:
-
-```bash
-docker-compose down
-```
-
-> O comando `docker-compose` down não remove o volume externo utilizado pelo PostgreSQL. Os dados persistem mesmo após a remoção dos contêineres.
-
-### Comunicação entre a API e o PostgreSQL
-
-Quando a API é executada dentro do Docker Compose, `localhost` não deve ser utilizado para acessar o PostgreSQL.
-
-A API utiliza o nome do serviço definido no `docker-compose.yml`:
-
-```text
-API
- ↓
-postgres:5432
- ↓
-PostgreSQL
-```
-
-A URL utilizada pela API dentro do ambiente Docker Compose é:
-
-```text
-jdbc:postgresql://postgres:5432/serviceflow
-```
-
-Já os testes executados pelo Maven diretamente no computador utilizam:
-
-```text
-jdbc:postgresql://localhost:5432/serviceflow
-```
-
-Isso ocorre porque, nos testes executados pelo host, `localhost` representa o próprio computador. Dentro do contêiner da API, `localhost` representa o próprio contêiner da API.
-
-### PostgreSQL
-
-O PostgreSQL é iniciado automaticamente pelo Docker Compose.
-
-Para verificar o banco em execução:
-
-```bash
-docker-compose ps
-```
-
-O serviço PostgreSQL será executado no contêiner:
-
-```text
-serviceflow-postgres
-```
-
-Para acessar o PostgreSQL diretamente pelo contêiner:
-
-```bash
-docker exec -it serviceflow-postgres psql -U serviceflow -d serviceflow
-```
-
-Para consultar a quantidade de solicitações armazenadas:
-
-```bash
-docker exec serviceflow-postgres psql -U serviceflow -d serviceflow -c "SELECT COUNT(*) FROM service_requests;"
-```
-
-### API
-
-Após iniciar o ambiente com Docker Compose, a API estará disponível em:
+A API ficará disponível em:
 
 ```text
 http://localhost:8080
 ```
 
-O endpoint principal pode ser testado através de:
+O PostgreSQL ficará disponível na porta `5432`.
+
+### Frontend
+
+Entre no diretório do frontend:
 
 ```bash
-curl http://localhost:8080/api/service-requests
+cd frontend
 ```
 
-A documentação da API está disponível através do Swagger UI:
+Instale as dependências:
+
+```bash
+npm install
+```
+
+Inicie o servidor de desenvolvimento:
+
+```bash
+npm run dev
+```
+
+O frontend ficará disponível em:
 
 ```text
-http://localhost:8080/swagger-ui/index.html
+http://localhost:5173
 ```
+
+Por padrão, o frontend utiliza a API local:
+
+```text
+http://localhost:8080/api
+```
+
+Para utilizar outra URL da API, configure a variável de ambiente `VITE_API_URL`.
 
 ### Testes
 
-Os testes automatizados continuam sendo executados através do Maven:
+Para executar os testes do backend:
 
 ```bash
-./mvnw clean test
+./mvnw test
 ```
 
-Os testes utilizam o perfil test e a configuração definida em:
+No Windows:
 
-```text
-src/test/resources/application-test.properties
-```
-
-Como os testes são executados diretamente no ambiente local, a conexão com o PostgreSQL utiliza:
-
-```text
-jdbc:postgresql://localhost:5432/serviceflow
-```
-
-A suíte completa de testes foi validada com sucesso na Aula 20:
-
-```text
-45 testes executados
-0 falhas
-0 erros
-BUILD SUCCESS
+```bash
+mvnw.cmd test
 ```
 
 ### Perfis e configurações de ambiente
 
-O projeto utiliza perfis do Spring Boot para separar as configurações de desenvolvimento e testes.
+A aplicação possui configurações específicas para diferentes ambientes.
 
-As configurações comuns ficam em:
+O arquivo `application.properties` contém as configurações gerais da aplicação, enquanto `application-dev.properties` contém configurações utilizadas durante o desenvolvimento.
 
-```text
-src/main/resources/application.properties
-```
+A conexão com o banco de dados pode ser configurada através de variáveis de ambiente.
 
-A configuração específica do ambiente de desenvolvimento fica em:
-
-```text
-src/main/resources/application-dev.properties
-```
-
-A configuração específica dos testes fica em:
-
-```text
-src/test/resources/application-test.properties
-```
-
-O perfil `dev` é utilizado pela API executada no Docker Compose.
-
-O perfil `test` é utilizado pelos testes automatizados através da anotação `@ActiveProfiles("test")`.
-
-As credenciais utilizadas no ambiente de desenvolvimento são:
-
-```bash
-DB_USERNAME=serviceflow
-DB_PASSWORD=serviceflow_dev
-```
-
-O arquivo `.env` permanece apenas no ambiente local e não é versionado no Git.
-
-O arquivo `.env.example` permanece no repositório como referência das variáveis utilizadas pelo projeto.
-
-### Variáveis de ambiente
-
-As configurações de usuário e senha do PostgreSQL são obtidas através das variáveis de ambiente:
-
-```text
-DB_USERNAME
-DB_PASSWORD
-```
-
-Durante a execução da API em Docker, também é utilizada:
-
-`SPRING_PROFILES_ACTIVE`
-
-e a URL do banco pode ser definida através de:
-
-`SPRING_DATASOURCE_URL`
-
-O arquivo `.env` é utilizado apenas localmente para manter essas informações disponíveis durante o desenvolvimento e não é versionado no Git.
-
-O arquivo `.env.example` é mantido no repositório como referência das variáveis utilizadas pelo projeto.
+No frontend, a URL da API é definida através da variável `VITE_API_URL`.
 
 ### Build
 
-Para gerar o arquivo JAR:
+Para gerar o build do backend:
 
 ```bash
 ./mvnw clean package
 ```
 
-O artefato será gerado em:
+Para gerar o build do frontend:
 
-```text
-target/serviceflow-api-0.0.1-SNAPSHOT.jar
+```bash
+cd frontend
+npm run build
 ```
+
+O build do frontend será gerado no diretório `frontend/dist/`.
 
 ## Documentação da API
 
-A API possui documentação baseada em **OpenAPI 3.1**, disponibilizada através do Swagger UI.
+A API REST é documentada utilizando **OpenAPI** e **Swagger UI**.
 
-Com a aplicação em execução, a documentação pode ser acessada através de:
+### Requisitos
 
-**Swagger UI:**
+Com a aplicação em execução, a documentação pode ser acessada através do Swagger UI:
 
+```text
 http://localhost:8080/swagger-ui/index.html
+```
 
 **OpenAPI JSON:**
 
@@ -464,52 +391,117 @@ http://localhost:8080/v3/api-docs
 
 O Swagger UI permite visualizar e testar os endpoints da API diretamente pelo navegador, incluindo parâmetros, dados de requisição e respostas HTTP.
 
-### Requisitos
+A API possui os seguintes endpoints principais:
 
-Para executar a API localmente utilizando Docker, é necessário que:
+| Método  | Endpoint                            | Descrição                          |
+| ------- | ----------------------------------- | ---------------------------------- |
+| `POST`  | `/api/service-requests`             | Cria uma nova solicitação          |
+| `GET`   | `/api/service-requests`             | Lista as solicitações              |
+| `GET`   | `/api/service-requests/{id}`        | Consulta uma solicitação por ID    |
+| `PUT`   | `/api/service-requests/{id}`        | Atualiza uma solicitação           |
+| `PATCH` | `/api/service-requests/{id}/status` | Altera o status de uma solicitação |
 
-- O Docker esteja em execução.
-- O contêiner PostgreSQL `serviceflow-postgres` esteja em execução.
-- O contêiner `serviceflow-api` esteja em execução.
-- Os contêineres estejam conectados à rede `serviceflow-network`.
-
-Verifique o contêiner com:
-
-```bash
-docker ps
-```
-
-Caso o contêiner esteja parado:
-
-```bash
-docker start serviceflow-postgres
-```
-
-Após iniciar a API, acesse:
-
-```text
-http://localhost:8080/swagger-ui/index.html
-```
-
-A documentação disponibiliza os endpoints de solicitações de serviço e os principais códigos de resposta utilizados pela API, incluindo `200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found` e `409 Conflict`.
+O frontend utiliza os endpoints de consulta e criação para exibir e registrar solicitações através da interface web.
 
 ### Paginação e ordenação
 
-A documentação do endpoint `GET /api/service-requests` também contempla os parâmetros de paginação e ordenação:
+O endpoint `GET /api/service-requests` utiliza paginação.
 
-- `page` — número da página, iniciando em `0`.
-- `size` — quantidade de solicitações retornadas por página.
-- `sort` — campo e direção utilizados para ordenação, por exemplo `createdAt,desc`.
+Parâmetros disponíveis:
 
-A paginação e a ordenação foram implementadas utilizando os recursos do Spring Data e podem ser testadas diretamente através do Swagger UI.
+* `page` — número da página, iniciando em `0`
+* `size` — quantidade de registros por página
+* `sort` — campo e direção da ordenação
+
+Exemplo:
+
+```text
+GET /api/service-requests?page=0&size=10
+```
+
+Por padrão, as solicitações são ordenadas por `createdAt` em ordem decrescente.
+
+A resposta contém as informações da página atual, incluindo:
+
+* `content`
+* `number`
+* `size`
+* `numberOfElements`
+* `totalElements`
+* `totalPages`
+
+O frontend utiliza essa paginação para exibir as solicitações em páginas de 10 registros.
+
+## Frontend
+
+O frontend do ServiceFlow foi desenvolvido em **React** utilizando **Vite** e está localizado no diretório `frontend/`, dentro do mesmo repositório da API.
+
+A aplicação se comunica com o backend através da API REST utilizando **Axios**.
+
+### Funcionalidades atuais
+
+* Dashboard com listagem das solicitações
+* Paginação com 10 solicitações por página
+* Exibição do total de solicitações
+* Contagem das solicitações por status na página atual
+* Identificação visual dos diferentes status
+* Formulário para criação de solicitações
+* Validação básica dos campos
+* Indicador de carregamento durante as requisições
+* Tratamento de erros de comunicação com a API
+* Tela de confirmação após a criação de uma solicitação
+
+### Tecnologias utilizadas
+
+* React
+* Vite
+* Axios
+* Bootstrap
+* React Bootstrap
+* React Router
+* Lucide React
+
+### Execução local
+
+Na raiz do projeto frontend:
+
+```bash id="q9j1fb"
+cd frontend
+npm install
+npm run dev
+```
+
+O frontend será disponibilizado pelo servidor de desenvolvimento do Vite.
+
+A URL da API utilizada pelo frontend pode ser configurada através da variável de ambiente `VITE_API_URL`.
+
+### Integração com a API
+
+Em ambiente local, o frontend utiliza a API disponível em:
+
+```text id="x5o6gd"
+http://localhost:8080/api
+```
+
+Em produção, a URL da API é configurada através da variável `VITE_API_URL`.
+
+A comunicação entre frontend e backend também foi configurada com CORS para permitir as origens utilizadas no desenvolvimento local e no ambiente de produção.
+
+### Deploy
+
+O frontend está publicado como um **Static Site no Render**.
+
+A aplicação em produção consome a API publicada no Render e permite consultar e criar solicitações diretamente pela interface web.
 
 ## Deploy
 
-A API está publicada em ambiente externo utilizando **Render** para hospedagem da aplicação e **Neon** para o banco de dados PostgreSQL.
+A aplicação está publicada em ambiente de produção utilizando **Render** para hospedagem da API e do frontend, com **Neon** como banco de dados PostgreSQL.
 
-### Ambiente publicado
+### Backend
 
-**API:**
+A API Spring Boot está hospedada no Render.
+
+**API em produção:**
 
 https://serviceflow-api-a9jk.onrender.com
 
@@ -517,9 +509,41 @@ https://serviceflow-api-a9jk.onrender.com
 
 https://serviceflow-api-a9jk.onrender.com/swagger-ui/index.html
 
-**OpenAPI JSON:**
+A aplicação utiliza variáveis de ambiente para configurar a conexão com o banco de dados PostgreSQL disponibilizado pelo Neon.
 
-https://serviceflow-api-a9jk.onrender.com/v3/api-docs
+### Banco de dados
+
+O PostgreSQL de produção é hospedado no Neon.
+
+A aplicação utiliza as credenciais e configurações de conexão através de variáveis de ambiente, evitando deixar informações sensíveis diretamente no código-fonte.
+
+### Frontend
+
+O frontend React está publicado no Render como **Static Site**.
+
+**Frontend em produção:**
+
+https://serviceflow-frontend-bmyj.onrender.com
+
+O frontend utiliza a variável de ambiente `VITE_API_URL` para definir o endereço da API que será consumida em produção.
+
+### Integração em produção
+
+A comunicação entre os serviços ocorre da seguinte forma:
+
+```text
+Usuário
+   ↓
+Frontend React
+   ↓
+API REST Spring Boot
+   ↓
+PostgreSQL (Neon)
+```
+
+O backend possui configuração de CORS permitindo a comunicação entre o frontend publicado e a API.
+
+A integração foi validada em produção através da consulta e criação de solicitações pelo frontend.
 
 ### Infraestrutura
 
@@ -542,9 +566,19 @@ O ambiente publicado foi validado através do Swagger UI, incluindo:
 
 ## CI
 
-O projeto utiliza **GitHub Actions** para executar automaticamente a suíte de testes a cada Pull Request direcionado à branch `main`.
+O projeto utiliza **GitHub Actions** para automação de integração contínua.
 
-O objetivo do CI é validar as alterações antes que elas sejam incorporadas à branch principal.
+O workflow de CI é executado a partir do repositório e realiza as etapas necessárias para validar o projeto, incluindo:
+
+* Configuração do ambiente Java
+* Instalação das dependências
+* Execução dos testes automatizados
+* Build da aplicação
+* Geração do artefato de build
+
+O CI ajuda a garantir que alterações submetidas ao projeto sejam verificadas automaticamente antes de serem integradas à branch principal.
+
+O frontend faz parte do mesmo repositório, mas o workflow atual de CI está direcionado à validação do backend Java.
 
 ### Execução dos testes
 
@@ -629,7 +663,16 @@ Em desenvolvimento.
 
 O projeto está sendo desenvolvido de forma incremental, evoluindo de uma API REST básica para uma aplicação com persistência em PostgreSQL, validação de dados, tratamento de exceções, regras de negócio, testes automatizados, documentação com OpenAPI/Swagger, paginação e ordenação dos resultados.
 
-Até o momento, foram concluídas **21 aulas**, contemplando a implementação e validação das principais funcionalidades da API.
+Até o momento, foram concluídas **22 aulas** do desenvolvimento do ServiceFlow.
+
+A API REST está funcional, testada, documentada e publicada em produção.
+
+O frontend em React também está integrado à API, possui dashboard, paginação e criação de solicitações, e está publicado em produção.
+
+A integração entre frontend, backend e banco de dados foi validada em ambiente de produção.
+
+As próximas etapas estão relacionadas principalmente à segurança, revisão, qualidade, testes finais e preparação do projeto para portfólio e entrevistas.
+
 
 ## Progresso do desenvolvimento
 
@@ -1040,15 +1083,36 @@ Até o momento, foram concluídas **21 aulas**, contemplando a implementação e
 - Execução da suíte completa de testes com sucesso: **45 testes, 0 falhas e 0 erros**.
 - Confirmação do `BUILD SUCCESS`.
 
-## Próximas aulas
-
 ### Aula 22 — Integração com Frontend
 
-* Entender a comunicação entre frontend e API REST
-* Consumir os endpoints do ServiceFlow API
-* Integrar operações de consulta e cadastro
-* Trabalhar com respostas HTTP da API
-* Validar o fluxo completo entre frontend, API e banco de dados
+Nesta aula, foi desenvolvido e integrado o frontend do ServiceFlow utilizando React e Vite, mantendo o frontend dentro do mesmo repositório da API.
+
+Principais atividades realizadas:
+
+* Criação do projeto frontend com React e Vite
+* Organização do frontend dentro do diretório `frontend/`
+* Configuração das dependências necessárias para a interface
+* Integração com a API REST utilizando Axios
+* Configuração da URL da API através da variável de ambiente `VITE_API_URL`
+* Implementação do dashboard de solicitações
+* Consumo do endpoint de listagem de solicitações
+* Implementação de paginação com 10 registros por página
+* Exibição do total de solicitações
+* Exibição da quantidade de solicitações por status na página atual
+* Identificação visual dos status `PENDING`, `IN_PROGRESS`, `COMPLETED` e `CANCELLED`
+* Implementação do formulário para criação de novas solicitações
+* Validação básica dos campos do formulário
+* Tratamento dos estados de carregamento e erro
+* Implementação da tela de confirmação após a criação de uma solicitação
+* Configuração de CORS no backend para permitir a comunicação com o frontend
+* Configuração da integração entre frontend e backend em ambiente local
+* Publicação do frontend como Static Site no Render
+* Configuração da comunicação entre o frontend publicado e a API publicada
+* Validação da aplicação completa em produção, incluindo consulta e criação de solicitações
+
+Nesta etapa, não foi implementada a alteração de status através do frontend nem uma tela de detalhes da solicitação. Essas funcionalidades permanecem planejadas para etapas posteriores, juntamente com a implementação de autenticação e segurança.
+
+## Próximas aulas
 
 ### Aula 23 — Segurança da API
 
@@ -1132,8 +1196,8 @@ Até o momento, foram concluídas **21 aulas**, contemplando a implementação e
 ✓ Aula 18 → Perfis e configurações de ambiente<br>
 ✓ Aula 19 → Dockerização da aplicação<br>
 ✓ Aula 20 → Docker Compose e ambiente da aplicação<br>
-✓ Aula 21 → Logs e observabilidade básica
-- [ ] Aula 22 → Integração com Frontend
+✓ Aula 21 → Logs e observabilidade básica<br>
+✓ Aula 22 → Integração com Frontend<br>
 - [ ] Aula 23 → Segurança da API
 - [ ] Aula 24 — Revisão final da API REST
 - [ ] Aula 25 — Qualidade e revisão de código
