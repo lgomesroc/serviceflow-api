@@ -48,9 +48,9 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
   * [Aula 20 - Docker Compose e ambiente da aplicação](#aula-20---docker-compose-e-ambiente-da-aplicação)
   * [Aula 21 — Logs e observabilidade básica](#aula-21--logs-e-observabilidade-básica)
   * [Aula 22 — Integração com Frontend](#aula-22--integração-com-frontend)
-* [Próximas aulas](#próximas-aulas)
   * [Aula 23 — Segurança da API](#aula-23--segurança-da-api)
-  * [Aula 24 — Revisão final da API REST](#aula-24--revisão-final-da-api-rest)
+  * [Aula 24 - Tela de login e integração com autenticação JWT](#aula-24---tela-de-login-e-integração-com-autenticação-jwt)
+* [Próximas aulas](#próximas-aulas)
   * [Aula 25 — Qualidade e revisão de código](#aula-25--qualidade-e-revisão-de-código)
   * [Aula 26 — Testes e validação final](#aula-26--testes-e-validação-final)
   * [Aula 27 — Preparação para portfólio](#aula-27--preparação-para-portfólio)
@@ -68,6 +68,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 * Spring Boot 4
 * Spring Web MVC
 * Spring Data JPA
+* Spring Security
 * Hibernate
 * PostgreSQL
 * Maven
@@ -77,6 +78,7 @@ O projeto está sendo desenvolvido com **Java e Spring Boot**, utilizando **Post
 * Mockito
 * OpenAPI
 * Swagger UI
+* JWT
 * GitHub Actions
 
 ### Frontend
@@ -119,7 +121,12 @@ A aplicação permite registrar solicitações, consultar os chamados cadastrado
 * Paginação e ordenação das solicitações
 * Persistência dos dados em PostgreSQL
 * Documentação da API com OpenAPI e Swagger UI
-* Testes automatizados
+* Autenticação de usuários
+* Registro de usuários com senha armazenada utilizando BCrypt
+* Login com geração de token JWT
+* Proteção dos endpoints da API através de JWT
+* Configuração de autorização através do Spring Security
+* Testes automatizados de segurança
 * Execução da aplicação em Docker e Docker Compose
 * CI com GitHub Actions
 
@@ -138,19 +145,22 @@ A aplicação permite registrar solicitações, consultar os chamados cadastrado
 * Tela de confirmação após a criação de uma solicitação
 * Integração com a API REST através do Axios
 * Configuração para execução local e integração com a API publicada
+* Tela de login
+* Integração do frontend com autenticação JWT
+* Proteção das rotas do frontend para usuários autenticados
+* Armazenamento do token JWT no navegador
+* Logout e remoção do token de autenticação
+* Redirecionamento para a tela de login quando a autenticação é inválida
 
 ### Planejadas
 
-* Autenticação e autorização
-* Proteção dos endpoints
-* Alteração de status através do frontend com autenticação
+* Alteração de status através do frontend
 * Tela de detalhes da solicitação
 * Revisão final da API REST
 * Melhorias de qualidade e revisão de código
 * Testes e validação final
 * Preparação do projeto para portfólio
 * Preparação para entrevistas
-
 
 ## Estrutura do projeto
 
@@ -188,26 +198,38 @@ serviceflow-api/
 │   │   │   └── com/serviceflow/api/
 │   │   │   │   ├── config/
 │   │   │   │   │   ├── CorsConfig.java
-│   │   │   │   │   └── OpenApiConfig.java
+│   │   │   │   │   ├── OpenApiConfig.java
+│   │   │   │   │   └── SecurityConfig.java
 │   │   │   │   ├── controller/
+│   │   │   │   │   ├── AuthController.java
 │   │   │   │   │   └── ServiceRequestController.java
 │   │   │   │   ├── dto/
+│   │   │   │   │   ├── LoginRequest.java
+│   │   │   │   │   ├── LoginResponse.java
+│   │   │   │   │   ├── RegisterRequest.java
 │   │   │   │   │   ├── ServiceRequestRequest.java
 │   │   │   │   │   ├── ServiceRequestResponse.java
 │   │   │   │   │   └── ServiceRequestStatusRequest.java
 │   │   │   │   ├── entity/
 │   │   │   │   │   ├── ServiceRequest.java
-│   │   │   │   │   └── ServiceRequestStatus.java
+│   │   │   │   │   ├── ServiceRequestStatus.java
+│   │   │   │   │   └── User.java
 │   │   │   │   ├── exception/ 
 │   │   │   │   │   ├── ErrorResponse.java
 │   │   │   │   │   ├── GlobalExceptionHandler.java 
 │   │   │   │   │   ├── InvalidServiceRequestStateException.java
 │   │   │   │   │   └── ServiceRequestNotFoundException.java
 │   │   │   │   ├── repository/
-│   │   │   │   │   └── ServiceRequestRepository.java
+│   │   │   │   │   ├── ServiceRequestRepository.java
+│   │   │   │   │   └── UserRepository.java
+│   │   │   │   ├── security/
+│   │   │   │   │   └── JwtAuthenticationFilter.java
 │   │   │   │   ├── service/
+│   │   │   │   │   ├── AuthService.java
+│   │   │   │   │   ├── CustomUserDetailsService.java
+│   │   │   │   │   ├── JwtService.java
+│   │   │   │   │   ├── ServiceflowApiApplication.java
 │   │   │   │   │   └── ServiceRequestService.java
-│   │   │   │   └── ServiceflowApiApplication.java
 │   │   └── resources/
 │   │   │   │   ├── application.properties
 │   │   │   │   └── application-dev.properties
@@ -218,11 +240,11 @@ serviceflow-api/
 │   │   │   │   │   └── ServiceRequestControllerTest.java
 │   │   │   │   ├── repository/
 │   │   │   │   │   └── ServiceRequestRepositoryTest.java
-│   │   │   │   │   └── resources/
-│   │   │   │   │       └── application-test.properties
 │   │   │   │   ├── service/
 │   │   │   │   │   └── ServiceRequestServiceTest.java
 │   │   │   │   └── ServiceflowApiApplicationTests.java
+│   │   └── resources/
+│   │   │   └── application-test.properties
 ├── .gitignore
 ├── docker-compose.yml
 ├── Dockerfile
@@ -663,7 +685,7 @@ Em desenvolvimento.
 
 O projeto está sendo desenvolvido de forma incremental, evoluindo de uma API REST básica para uma aplicação com persistência em PostgreSQL, validação de dados, tratamento de exceções, regras de negócio, testes automatizados, documentação com OpenAPI/Swagger, paginação e ordenação dos resultados.
 
-Até o momento, foram concluídas **22 aulas** do desenvolvimento do ServiceFlow.
+Até o momento, foram concluídas **24 aulas** do desenvolvimento do ServiceFlow.
 
 A API REST está funcional, testada, documentada e publicada em produção.
 
@@ -1110,27 +1132,48 @@ Principais atividades realizadas:
 * Configuração da comunicação entre o frontend publicado e a API publicada
 * Validação da aplicação completa em produção, incluindo consulta e criação de solicitações
 
-Nesta etapa, não foi implementada a alteração de status através do frontend nem uma tela de detalhes da solicitação. Essas funcionalidades permanecem planejadas para etapas posteriores, juntamente com a implementação de autenticação e segurança.
-
-## Próximas aulas
+Nesta etapa, não foi implementada a alteração de status através do frontend nem uma tela de detalhes da solicitação. Essas funcionalidades permanecem planejadas para etapas posteriores.
 
 ### Aula 23 — Segurança da API
 
-* Entender autenticação e autorização
-* Introduzir Spring Security
-* Proteger endpoints da API
-* Entender o funcionamento de autenticação baseada em JWT
-* Diferenciar autenticação de autorização
+* Introdução a autenticação e autorização
+* Spring Security
+* Configuração do `SecurityFilterChain`
+* API stateless
+* Criação da entidade `User`
+* `UserRepository`
+* Cadastro de usuários com `POST /auth/register`
+* Criptografia de senhas com BCrypt
+* Login com `POST /auth/login`
+* Geração e validação de tokens JWT
+* Implementação do `JwtAuthenticationFilter`
+* Autenticação através do `SecurityContext`
+* Implementação do `CustomUserDetailsService`
+* Proteção dos endpoints `/api/**`
+* Liberação dos endpoints de autenticação e documentação
+* Configuração do Swagger para autenticação Bearer JWT
+* Testes automatizados de segurança
+* Execução da suíte completa com **48 testes**, sem falhas ou erros
+* Build final concluído com sucesso
 
-### Aula 24 — Revisão final da API REST
+### Aula 24 — Tela de login e integração com autenticação JWT
 
-* Revisar os endpoints existentes
-* Revisar métodos HTTP e códigos de status
-* Revisar validações
-* Revisar tratamento de exceções
-* Revisar DTOs e regras de negócio
-* Revisar paginação e ordenação
-* Revisar documentação com OpenAPI e Swagger
+* Implementação da tela de login no frontend.
+* Integração do frontend com o endpoint `POST /auth/login`.
+* Armazenamento do token JWT no `localStorage`.
+* Criação de rota protegida para as páginas autenticadas.
+* Redirecionamento para a tela de login quando não existe token.
+* Inclusão automática do JWT nas requisições da API através de interceptor do Axios.
+* Implementação de logout no frontend.
+* Integração entre frontend publicado e API publicada.
+* Configuração de CORS para permitir a comunicação entre frontend e API.
+* Liberação das requisições `OPTIONS` para funcionamento do preflight CORS.
+* Validação do fluxo completo de autenticação no frontend.
+* Validação do acesso às solicitações após autenticação.
+* Execução da suíte completa de testes com sucesso: **48 testes, 0 falhas e 0 erros**.
+* Confirmação do `BUILD SUCCESS`.
+
+## Próximas aulas
 
 ### Aula 25 — Qualidade e revisão de código
 
@@ -1198,8 +1241,8 @@ Nesta etapa, não foi implementada a alteração de status através do frontend 
 ✓ Aula 20 → Docker Compose e ambiente da aplicação<br>
 ✓ Aula 21 → Logs e observabilidade básica<br>
 ✓ Aula 22 → Integração com Frontend<br>
-- [ ] Aula 23 → Segurança da API
-- [ ] Aula 24 — Revisão final da API REST
+✓ Aula 23 → Segurança da API<br>
+✓ Aula 24 — Tela de login e integração com autenticação JWT<br>
 - [ ] Aula 25 — Qualidade e revisão de código
 - [ ] Aula 26 — Testes e validação final
 - [ ] Aula 27 — Preparação para portfólio
