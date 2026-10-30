@@ -621,23 +621,27 @@ O projeto foi construído de forma incremental em **25 etapas**, abrangendo desd
 
 # Status
 
-**Projeto funcional e publicado em produção.**
+**Projeto concluído — versão 1.0.0.**
 
-O projeto possui:
+O ServiceFlow API está finalizado e publicado em produção. O escopo planejado foi implementado, incluindo backend, frontend, persistência em PostgreSQL, autenticação JWT, regras de negócio, testes automatizados, documentação da API, containerização e pipeline de integração contínua.
+
+A versão atual é mantida como entrega concluída de portfólio. Novas funcionalidades ou mudanças de escopo, caso sejam necessárias futuramente, serão tratadas em uma evolução separada do projeto.
+
+### Entrega final
 
 * Backend Java/Spring Boot.
 * Frontend React.
 * PostgreSQL.
 * Autenticação JWT.
-* Regras de negócio.
+* Regras de negócio e validações.
 * Testes automatizados.
 * Swagger/OpenAPI.
-* Docker.
+* Docker e Docker Compose.
 * CI com GitHub Actions.
 * Deploy em produção.
 * Integração entre frontend, backend e banco de dados.
 
-Última validação da aplicação:
+Última validação documentada da aplicação:
 
 ```text
 Testes automatizados: 48
