@@ -70,6 +70,15 @@ class ServiceRequestControllerTest {
 
     @Test
     void shouldReturnRequestedPage() throws Exception {
+        repository.deleteAll();
+
+        for (int index = 1; index <= 10; index++) {
+            ServiceRequest request = new ServiceRequest();
+            request.setTitle("Solicitação de teste " + index);
+            request.setDescription("Descrição da solicitação de teste " + index);
+            repository.save(request);
+        }
+
         mockMvc.perform(
                         get("/api/service-requests")
                                 .param("page", "1")
@@ -77,9 +86,12 @@ class ServiceRequestControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(5))
                 .andExpect(jsonPath("$.number").value(1))
                 .andExpect(jsonPath("$.size").value(5))
-                .andExpect(jsonPath("$.numberOfElements").value(5));
+                .andExpect(jsonPath("$.numberOfElements").value(5))
+                .andExpect(jsonPath("$.totalElements").value(10))
+                .andExpect(jsonPath("$.totalPages").value(2));
     }
 
     @Test
